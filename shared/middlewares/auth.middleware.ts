@@ -1,0 +1,1 @@
+// Checks auth token
