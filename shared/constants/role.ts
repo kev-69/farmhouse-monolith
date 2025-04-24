@@ -1,1 +1,0 @@
-// Role strings: 'ADMIN', 'SHOP_OWNER', 'CUSTOMER'
