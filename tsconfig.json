@@ -9,5 +9,5 @@
       "esModuleInterop": true,
       "skipLibCheck": true
     },
-    "include": ["apps", "modules", "shared", "prisma"]
-  }
+    "include": ["apps", "modules", "shared", "prisma", "middlewares", "utils"]
+}
