@@ -1,1 +1,55 @@
-// Defines DB models (User, Product, etc.)
+generator client {
+  provider = "prisma-client-js"
+    output   = "../prisma/client" // Adjust the path as needed
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  name     String
+  role     String
+  orders   Order[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Float
+  description String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  orders      Order[]  @relation("ProductOrder")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  products    Product[]
+}
+
+model Order {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  productIds String[]
+  totalAmount Float
+  status     String
+  payments   Payment[]
+  products   Product[] @relation("ProductOrder")
+}
+
+model Payment {
+  id       String  @id @default(uuid())
+  orderId  String
+  order    Order   @relation(fields: [orderId], references: [id])
+  amount   Float
+  method   String
+  status   String
+}
