@@ -69,7 +69,8 @@ export const verifyProductOwnership = async (req: Request, res: Response, next: 
     const product = await prisma.product.findUnique({ where: { id: productId } });
 
     if (!product || product.shopId !== shopId) {
-      return res.status(403).json({ message: 'You do not have permission to modify this product.' });
+      res.status(403).json({ message: 'You do not have permission to modify this product.' });
+      return
     }
 
     next();
