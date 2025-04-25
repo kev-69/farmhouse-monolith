@@ -3,11 +3,27 @@
 import { Request, Response } from 'express';
 import { categoryService } from './category.service';
 
+// Define interface to extend Express Request
+interface AuthRequest extends Request {
+    user?: {
+        id: string;
+        shopId: string;
+        role: string;
+    }
+}
+
 export const categoryController = {
-    createCategory: async (req: Request, res: Response) => {
+    createCategory: async (req: AuthRequest, res: Response) => {
         try {
-            const category = await categoryService.createCategory(req.body);
-            res.status(201).json(category);
+            // Include shopId from authenticated shop
+            const categoryData = { 
+                ...req.body, 
+                shopId: req.user?.shopId 
+            };
+            
+            const category = await categoryService.createCategory(categoryData);
+
+            res.status(201).json({ message: 'New category created successfully', category });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ message: error.message });
@@ -20,6 +36,7 @@ export const categoryController = {
     getAllCategories: async (req: Request, res: Response) => {
         try {
             const categories = await categoryService.getAllCategories();
+
             res.status(200).json(categories);
         } catch (error) {
             if (error instanceof Error) {
@@ -33,6 +50,7 @@ export const categoryController = {
     getCategory: async (req: Request, res: Response) => {
         try {
             const category = await categoryService.getCategory(req.params.id);
+
             res.status(200).json(category);
         } catch (error) {
             if (error instanceof Error) {
@@ -43,9 +61,14 @@ export const categoryController = {
         }
     },
 
-    updateCategory: async (req: Request, res: Response) => {
+    updateCategory: async (req: AuthRequest, res: Response) => {
         try {
-            const category = await categoryService.updateCategory(req.params.id, req.body);
+            const category = await categoryService.updateCategory(
+                req.params.id, 
+                req.body, 
+                req.user?.shopId || ''
+            );
+
             res.status(200).json(category);
         } catch (error) {
             if (error instanceof Error) {
@@ -56,9 +79,13 @@ export const categoryController = {
         }
     },
 
-    deleteCategory: async (req: Request, res: Response) => {
+    deleteCategory: async (req: AuthRequest, res: Response) => {
         try {
-            await categoryService.deleteCategory(req.params.id);
+            await categoryService.deleteCategory(
+                req.params.id, 
+                req.user?.shopId || ''
+            );
+
             res.status(204).send();
         } catch (error) {
             if (error instanceof Error) {
