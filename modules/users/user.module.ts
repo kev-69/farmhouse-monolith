@@ -1,6 +1,8 @@
 // Combines controller + service into a unit
 import { Router } from 'express';
 import { userController } from './user.controller';
+
+// middlewares
 import validateToken from '../../middlewares/user.middleware';
 
 const router = Router();
