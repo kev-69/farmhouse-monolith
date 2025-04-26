@@ -2,16 +2,38 @@
 import { Router } from 'express';
 import { categoryController } from './category.controller';
 
+// middlewares to validate product data
+import { validate } from '../../middlewares/validation.middleware';
+import { createCategorySchema, updateCategorySchema } from './category.schema';
+
 // middlewares to authorize shops to add categories, update categories they own, and delele categories they own
 import { validateToken, verifyShop, verifyCategoryOwnership } from '../../middlewares/shop.middleware';
 
 const router = Router();
 
 // Define routes
-router.post('/add-category', validateToken, verifyShop, categoryController.createCategory);
+router.post('/add-category', 
+    validateToken, 
+    verifyShop, 
+    validate({ body: createCategorySchema }),
+    categoryController.createCategory
+);
+
 router.get('/all-categories', categoryController.getAllCategories);
 router.get('/category/:id', categoryController.getCategory);
-router.put('/update-category/:id', validateToken, verifyCategoryOwnership, categoryController.updateCategory);
-router.delete('/delete-category/:id', validateToken, verifyCategoryOwnership, categoryController.deleteCategory);
+
+router.put('/update-category/:id', 
+    validateToken, 
+    verifyShop,
+    verifyCategoryOwnership, 
+    validate({ body: updateCategorySchema }),
+    categoryController.updateCategory
+);
+router.delete('/delete-category/:id', 
+    validateToken, 
+    verifyShop,
+    verifyCategoryOwnership,
+    categoryController.deleteCategory
+);
 
 export const categoryModule = router;
