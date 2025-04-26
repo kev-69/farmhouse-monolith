@@ -7,7 +7,7 @@ export const createProductSchema = z.object({
     price: z.number().positive({ message: 'Price must be a positive number' }),
     description: z.string().min(1, { message: 'Description is required' }),
     categoryId: z.string().min(1, { message: 'Category ID is required' }),
-    productImages: z.array(z.string()).min(1, { message: 'At least one image is required' }).optional(),
+    productImages: z.array(z.string()).min(1, { message: 'At least one image is required' }),
 });
 
 export const updateProductSchema = z.object({
