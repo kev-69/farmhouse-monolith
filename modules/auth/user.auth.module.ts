@@ -15,9 +15,24 @@ const loginMiddlewares = [
     authMiddlewares.sanitizeInput
 ];
 
+// middlewares to validate product data
+import { validate } from '../../middlewares/validation.middleware';
+import { loginSchema, signupSchema, refreshTokenSchema } from './user.auth.schema';
+
 // Define routes
-router.post('/signup', signupMiddlewares, authController.signup);
-router.post('/login', loginMiddlewares, authController.login);
-router.post('/refresh-token', authController.refreshToken);
+router.post('/signup', 
+    signupMiddlewares,
+    validate({ body: signupSchema }), 
+    authController.signup
+);
+router.post('/login', 
+    loginMiddlewares, 
+    validate({ body:loginSchema }),
+    authController.login
+);
+router.post('/refresh-token', 
+    validate({ body: refreshTokenSchema }),
+    authController.refreshToken
+);
 
 export const authModule = router;
