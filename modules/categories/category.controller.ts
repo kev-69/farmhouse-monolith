@@ -9,6 +9,7 @@ interface AuthRequest extends Request {
         id: string;
         shopId: string;
         role: string;
+        verified: boolean;
     }
 }
 
@@ -20,6 +21,8 @@ export const categoryController = {
                 ...req.body, 
                 shopId: req.user?.shopId 
             };
+
+            // check if shop is verified before approving to create category
             
             const category = await categoryService.createCategory(categoryData);
 
@@ -63,6 +66,8 @@ export const categoryController = {
 
     updateCategory: async (req: AuthRequest, res: Response) => {
         try {
+            // check if shop is verified before allowing to update their product
+
             const category = await categoryService.updateCategory(
                 req.params.id, 
                 req.body, 
