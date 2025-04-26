@@ -17,8 +17,8 @@ router.post('/add-product',
     validate({ body: createProductSchema }), // Validate product data
     productController.createProduct
 );
-router.get('/', productController.getAllProducts);
-router.get('/:id', productController.getProduct);
+router.get('/all-products', productController.getAllProducts);
+router.get('/product/:id', productController.getProduct);
 
 router.put('/update-product/:id', 
     validateToken,
