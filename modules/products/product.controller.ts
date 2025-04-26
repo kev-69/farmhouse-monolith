@@ -8,6 +8,7 @@ interface CustomRequest extends Request {
         id: string 
         shopId: string
         role: string
+        verified: boolean
     };
 }
 
@@ -18,8 +19,10 @@ export const productController = {
             // Include shopId from authenticated shop
             const productData = {
                 ...req.body,
-                shopId: req.user?.shopId // Assuming shopId is passed in the request body
+                shopId: req.user?.shopId
             };
+
+            // check if shop is verified before allowing to add products
 
             const product = await productService.createProduct(productData);
 
@@ -63,6 +66,8 @@ export const productController = {
 
     updateProduct: async (req: CustomRequest, res: Response) => {
         try {
+            // check if shop is verified before allowing to update their products
+
             const product = await productService.updateProduct(
                 req.params.id, 
                 req.body, 
