@@ -27,8 +27,25 @@ export const authService = {
     },
 
     signup: async (data: any) => {
-        // Rest of code unchanged
-    },
+        const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+
+        if (existingUser) {
+            throw new Error('A user already exists with this email');
+        }
+
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const user = await prisma.user.create({
+            data: {
+                email: data.email,
+                password: hashedPassword,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                role: 'USER',
+                isVerified: false
+            }
+        });
+        return user;
+},
 
     refreshToken: async (token: string) => {
         try {
@@ -38,7 +55,7 @@ export const authService = {
                 return jwt.sign(
                     payload, 
                     process.env.JWT_SECRET as jwt.Secret, 
-                    { expiresIn:'24h' }
+                    { expiresIn: '24h' }
                 );
             }
             throw new Error('Invalid token payload');
