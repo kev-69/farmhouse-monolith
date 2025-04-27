@@ -19,11 +19,11 @@ export const validate = (schemas: {
     return next();
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Validation failed',
         errors: error.errors,
       });
     }
-    return res.status(500).json({ message: 'Internal server error during validation' });
+    res.status(500).json({ message: 'Internal server error during validation' });
   }
 };
