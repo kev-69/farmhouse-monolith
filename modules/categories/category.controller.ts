@@ -23,7 +23,11 @@ export const categoryController = {
             };
 
             // check if shop is verified before approving to create category
-            
+            if (!req.user?.verified) {
+                res.status(403).json({ message: 'Only verified shop accounts can add a category' });
+                return
+            }
+
             const category = await categoryService.createCategory(categoryData);
 
             res.status(201).json({ message: 'New category created successfully', category });
@@ -66,8 +70,6 @@ export const categoryController = {
 
     updateCategory: async (req: AuthRequest, res: Response) => {
         try {
-            // check if shop is verified before allowing to update their product
-
             const category = await categoryService.updateCategory(
                 req.params.id, 
                 req.body, 
