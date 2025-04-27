@@ -6,7 +6,7 @@ export const shopController = {
         try {
             const shop = await shopService.getShop(req.user.shopId);
             res.status(200).json({
-                message: 'Shop profile retrieve successfully',
+                message: 'Shop profile retrieved successfully',
                 data: shop
             })
         } catch (error) {
