@@ -46,7 +46,7 @@ export const authService = {
         return jwt.sign(
             payload, 
             process.env.JWT_SECRET as jwt.Secret, 
-            { expiresIn: process.env.JWT_EXPIRATION || '24h' }
+            { expiresIn: '24h' }
         );
     }
 }
