@@ -39,7 +39,7 @@ export const authService = {
             id: shop.id,
             shopId: shop.id, // For backward compatibility
             role: shop.role,
-            isVerified: shop.isVerified,
+            verified: shop.isVerified,
             type: 'SHOP'
         };
 
