@@ -22,6 +22,8 @@ model User {
   role       String
   isVerified Boolean
   orders     Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -29,12 +31,16 @@ model Product {
   name          String
   price         Float
   description   String?
+  stockQuantity Int
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])
   orders        Order[]  @relation("ProductOrder")
   shopId        String
-  shop          Shop     @relation(fields: [shopId], references: [id])
+  shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
   productImages String[]
+  orderItems    OrderItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Category {
@@ -42,28 +48,51 @@ model Category {
   name        String
   description String?
   shopId      String
-  shop        Shop      @relation(fields: [shopId], references: [id])
+  shop        Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
   products    Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }
 
 model Order {
-  id          String    @id @default(uuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  productIds  String[]
-  totalAmount Float
-  status      String
-  payments    Payment[]
-  products    Product[] @relation("ProductOrder")
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  totalAmount   Float
+  orderStatus   OrderStatus
+  payments      Payment[]
+  products      Product[]   @relation("ProductOrder")
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Float
 }
 
 model Payment {
-  id      String @id @default(uuid())
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id])
-  amount  Float
-  method  String
-  status  String
+  id        String @id @default(uuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id])
+  amount    Float
+  method    String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Shop {
@@ -78,4 +107,6 @@ model Shop {
   isVerified  Boolean
   categories  Category[]
   products    Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
