@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';  // Consider hashing passwords
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ async function main() {
             name: 'Tech Store',
             ownerName: 'Alice Johnson',
             email: 'techstore@example.com',
-            password: 'securepassword',
+            password: await bcrypt.hash('securepassword', 10),  // Hash passwords for security
             location: '123 Tech Street',
             phoneNumber: '123-456-7890',
             role: 'SHOP',
@@ -22,7 +23,7 @@ async function main() {
             name: 'Fashion Hub',
             ownerName: 'Bob Smith',
             email: 'fashionhub@example.com',
-            password: 'securepassword',
+            password: await bcrypt.hash('securepassword', 10),
             location: '456 Fashion Avenue',
             phoneNumber: '987-654-3210',
             role: 'SHOP',
@@ -30,25 +31,33 @@ async function main() {
         },
     });
 
-     // Create sample categories
-     const electronics = await prisma.category.create({
-        data: { name: 'Electronics', description: 'Electronic gadgets and devices', shopId: shop2.id }, // Add this line if you want to associate with a shop
+    // Create sample categories
+    const electronics = await prisma.category.create({
+        data: { 
+            name: 'Electronics', 
+            description: 'Electronic gadgets and devices', 
+            shopId: shop1.id  // Changed to shop1
+        },
     });
 
     const clothing = await prisma.category.create({
-        data: { name: 'Clothing', description: 'Apparel and accessories', shopId: shop1.id }, // Add this line if you want to associate with a shop
+        data: { 
+            name: 'Clothing', 
+            description: 'Apparel and accessories', 
+            shopId: shop2.id  // Changed to shop2
+        },
     });
 
     // Create sample products
-    // Add shopId to the first product
     const product1 = await prisma.product.create({
         data: { 
             name: 'Smartphone', 
             price: 699.99, 
-            description: 'Latest model smartphone', 
+            description: 'Latest model smartphone',
+            stockQuantity: 100,  // Added required field
             categoryId: electronics.id,
-            shopId: shop1.id,  // Add this line
-            productImages: []  // Add this line if it's required
+            shopId: shop1.id,
+            productImages: ['smartphone1.jpg', 'smartphone2.jpg']
         },
     });
 
@@ -56,29 +65,32 @@ async function main() {
         data: { 
             name: 'T-Shirt', 
             price: 19.99, 
-            description: 'Cotton t-shirt', 
+            description: 'Cotton t-shirt',
+            stockQuantity: 500,  // Added required field
             categoryId: clothing.id,
-            shopId: shop2.id,  // Add this line
-            productImages: []  // Add this line if it's required
+            shopId: shop2.id,
+            productImages: ['tshirt1.jpg', 'tshirt2.jpg']
         },
     });
 
-    await prisma.product.create({
+    const laptop = await prisma.product.create({
         data: {
             name: 'Laptop',
             price: 999.99,
             description: 'High-performance laptop',
+            stockQuantity: 50,   // Added required field
             categoryId: electronics.id,
             shopId: shop1.id,
             productImages: ['laptop1.jpg', 'laptop2.jpg'],
         },
     });
 
-    await prisma.product.create({
+    const dress = await prisma.product.create({
         data: {
             name: 'Designer Dress',
             price: 199.99,
             description: 'Elegant evening dress',
+            stockQuantity: 75,   // Added required field
             categoryId: clothing.id,
             shopId: shop2.id,
             productImages: ['dress1.jpg', 'dress2.jpg'],
@@ -89,11 +101,11 @@ async function main() {
     const user = await prisma.user.create({
         data: { 
             email: 'user@example.com', 
-            password: 'password123', 
-            firstName: 'John',  // Change this
-            lastName: 'Doe',    // Add this
+            password: await bcrypt.hash('password123', 10),
+            firstName: 'John',
+            lastName: 'Doe',
             role: 'USER',
-            isVerified: true    // Add this required field
+            isVerified: true
         },
     });
 
@@ -101,15 +113,33 @@ async function main() {
     const order = await prisma.order.create({
         data: {
             userId: user.id,
-            productIds: [],
             totalAmount: 719.98,
-            status: 'PENDING',
+            orderStatus: 'PROCESSING',  // Using a string literal for the status
             products: {
                 connect: [
                     { id: product1.id },
                     { id: product2.id }
                 ]
             }
+        },
+    });
+
+    // Create order items (new relationship)
+    await prisma.orderItem.create({
+        data: {
+            orderId: order.id,
+            productId: product1.id,
+            quantity: 1,
+            price: 699.99,
+        },
+    });
+
+    await prisma.orderItem.create({
+        data: {
+            orderId: order.id,
+            productId: product2.id,
+            quantity: 1,
+            price: 19.99,
         },
     });
 
@@ -122,6 +152,8 @@ async function main() {
             status: 'COMPLETED',
         },
     });
+
+    console.log('Database has been seeded successfully!');
 }
 
 main()
