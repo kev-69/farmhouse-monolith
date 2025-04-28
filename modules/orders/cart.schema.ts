@@ -16,7 +16,5 @@ export const updateCartSchema = z.object({
 });
 
 export const checkoutSchema = z.object({
-    shippingAddress: z.string().min(1, { message: 'Shipping address is required' }),
-    paymentMethod: z.enum(['CREDIT_CARD', 'PAYPAL', 'BANK_TRANSFER', 'CASH_ON_DELIVERY']),
-    additionalNotes: z.string().optional()
+    paymentMethod: z.enum(['CREDIT_CARD', 'MOMO']),
 });
