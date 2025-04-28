@@ -20,10 +20,13 @@ export const validate = (schemas: {
   } catch (error) {
     if (error instanceof ZodError) {
       res.status(400).json({
-        message: 'Validation failed',
-        errors: error.errors,
+        message: 'Validation error',
+        errors: error.errors
+      });
+    } else {
+      res.status(500).json({ 
+        message: 'An unexpected error occurred during validation' 
       });
     }
-    res.status(500).json({ message: 'Internal server error during validation' });
   }
 };
