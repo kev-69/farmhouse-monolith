@@ -11,5 +11,9 @@ const router = Router();
 router.get('/profile', validateToken, userController.getUser);
 router.put('/update-profile', validateToken, userController.updateUser);
 router.delete('/delete-profile', validateToken, userController.deleteUser);
+router.post('/profile/add-address', validateToken, userController.addAddress);
+router.put('/profile/update-address/:addressId', validateToken, userController.updateAddress);
+router.get('/addresses', validateToken, userController.getAddresses);
+router.delete('/profile/delete-address/:addressId', validateToken, userController.deleteAddress);
 
 export const userModule = router;
