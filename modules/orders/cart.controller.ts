@@ -18,7 +18,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const { productId, quantity = 1 } = req.body;
@@ -26,11 +27,13 @@ export const cartController = {
             // Check if product exists and has enough stock
             const product = await prisma.product.findUnique({ where: { id: productId } });
             if (!product) {
-                return res.status(404).json({ message: 'Product not found' });
+                res.status(404).json({ message: 'Product not found' });
+                return;
             }
 
             if (product.stockQuantity < quantity) {
-                return res.status(400).json({ message: 'Not enough stock available' });
+                res.status(400).json({ message: 'Not enough stock available' });
+                return;
             }
 
             // Get user's cart key
@@ -42,7 +45,8 @@ export const cartController = {
             
             // Check if new quantity exceeds stock
             if (newQuantity > product.stockQuantity) {
-                return res.status(400).json({ message: 'Cannot add more of this item (exceeds available stock)' });
+                res.status(400).json({ message: 'Cannot add more of this item (exceeds available stock)' });
+                return;
             }
 
             // Add product to cart with updated quantity
@@ -51,7 +55,7 @@ export const cartController = {
             // Set cart expiry (24 hours)
             await redisClient.expire(cartKey, 24 * 60 * 60);
             
-            return res.status(200).json({ 
+            res.status(200).json({ 
                 message: 'Product added to cart',
                 productId,
                 quantity: newQuantity
@@ -59,9 +63,9 @@ export const cartController = {
         } catch (error) {
             console.error('Error adding to cart:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while adding to cart' });
+                res.status(500).json({ message: 'An error occurred while adding to cart' });
             }
         }
     },
@@ -70,7 +74,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const { productId } = req.params;
@@ -79,25 +84,28 @@ export const cartController = {
             // Validate product
             const product = await prisma.product.findUnique({ where: { id: productId } });
             if (!product) {
-                return res.status(404).json({ message: 'Product not found' });
+                res.status(404).json({ message: 'Product not found' });
+                return;
             }
             
             // Check if product is in cart
             const cartKey = `cart:${req.user.id}`;
             const exists = await redisClient.hExists(cartKey, productId);
             if (!exists) {
-                return res.status(404).json({ message: 'Product not found in cart' });
+                res.status(404).json({ message: 'Product not found in cart' });
+                return;
             }
             
             // Check stock
             if (quantity > product.stockQuantity) {
-                return res.status(400).json({ message: 'Not enough stock available' });
+                res.status(400).json({ message: 'Not enough stock available' });
+                return;
             }
             
             // Update quantity
             await redisClient.hSet(cartKey, productId, quantity.toString());
             
-            return res.status(200).json({ 
+            res.status(200).json({ 
                 message: 'Cart updated successfully',
                 productId,
                 quantity
@@ -105,9 +113,9 @@ export const cartController = {
         } catch (error) {
             console.error('Error updating cart:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while updating cart' });
+                res.status(500).json({ message: 'An error occurred while updating cart' });
             }
         }
     },
@@ -116,7 +124,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const { productId } = req.params;
@@ -125,19 +134,20 @@ export const cartController = {
             // Check if product exists in cart
             const exists = await redisClient.hExists(cartKey, productId);
             if (!exists) {
-                return res.status(404).json({ message: 'Product not found in cart' });
+                res.status(404).json({ message: 'Product not found in cart' });
+                return;
             }
             
             // Remove product from cart
             await redisClient.hDel(cartKey, productId);
             
-            return res.status(200).json({ message: 'Product removed from cart' });
+            res.status(200).json({ message: 'Product removed from cart' });
         } catch (error) {
             console.error('Error removing from cart:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while removing from cart' });
+                res.status(500).json({ message: 'An error occurred while removing from cart' });
             }
         }
     },
@@ -146,7 +156,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const cartKey = `cart:${req.user.id}`;
@@ -155,7 +166,8 @@ export const cartController = {
             const cartItems = await redisClient.hGetAll(cartKey);
             
             if (!cartItems || Object.keys(cartItems).length === 0) {
-                return res.status(200).json({ items: [], totalAmount: 0 });
+                res.status(200).json({ items: [], totalAmount: 0 });
+                return;
             }
             
             // Fetch product details for items in cart
@@ -193,16 +205,16 @@ export const cartController = {
             const totalAmount = validProducts.reduce((sum, product) => 
                 sum + (product?.subtotal || 0), 0);
             
-            return res.status(200).json({ 
+            res.status(200).json({ 
                 items: validProducts,
                 totalAmount
             });
         } catch (error) {
             console.error('Error fetching cart:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while fetching cart' });
+                res.status(500).json({ message: 'An error occurred while fetching cart' });
             }
         }
     },
@@ -211,7 +223,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const cartKey = `cart:${req.user.id}`;
@@ -219,13 +232,13 @@ export const cartController = {
             // Delete the entire cart
             await redisClient.del(cartKey);
             
-            return res.status(200).json({ message: 'Cart cleared successfully' });
+            res.status(200).json({ message: 'Cart cleared successfully' });
         } catch (error) {
             console.error('Error clearing cart:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while clearing cart' });
+                res.status(500).json({ message: 'An error occurred while clearing cart' });
             }
         }
     },
@@ -234,7 +247,8 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
 
             const userId = req.user.id;
@@ -244,10 +258,11 @@ export const cartController = {
             const cartItems = await redisClient.hGetAll(cartKey);
             
             if (!cartItems || Object.keys(cartItems).length === 0) {
-                return res.status(400).json({ message: 'Your cart is empty' });
+                res.status(400).json({ message: 'Your cart is empty' });
+                return;
             }
             
-            const { shippingAddress, paymentMethod, additionalNotes } = req.body;
+            const { paymentMethod} = req.body;
             
             // Fetch product details and validate stock
             const orderItems = await Promise.all(
@@ -286,8 +301,6 @@ export const cartController = {
                         userId,
                         totalAmount,
                         orderStatus: 'PROCESSING',
-                        shippingAddress,
-                        additionalNotes,
                         orderItems: {
                             create: orderItems.map(item => ({
                                 productId: item.productId,
@@ -334,16 +347,16 @@ export const cartController = {
             // Clear the cart after successful checkout
             await redisClient.del(cartKey);
             
-            return res.status(201).json({
+            res.status(201).json({
                 message: 'Order placed successfully',
                 order
             });
         } catch (error) {
             console.error('Error during checkout:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred during checkout' });
+                res.status(500).json({ message: 'An error occurred during checkout' });
             }
         }
     }
