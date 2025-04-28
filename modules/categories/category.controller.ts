@@ -25,7 +25,6 @@ export const categoryController = {
             // check if shop is verified before approving to create category
             if (!req.user?.verified) {
                 res.status(403).json({ message: 'Only verified shop accounts can add a category' });
-                return
             }
 
             const category = await categoryService.createCategory(categoryData);
