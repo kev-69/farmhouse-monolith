@@ -28,16 +28,17 @@ export const orderController = {
                 // For regular users, get their own orders
                 orders = await orderService.getOrdersByUserId(req.user.id);
             } else {
-                return res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json({ message: 'Authentication required' });
+                return;
             }
             
-            return res.status(200).json(orders);
+            res.status(200).json(orders);
         } catch (error) {
             console.error('Error fetching orders:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while fetching orders' });
+                res.status(500).json({ message: 'An error occurred while fetching orders' });
             }
         }
     },
@@ -55,21 +56,23 @@ export const orderController = {
                     // Shops can only view orders with their products
                     const hasPermission = await orderService.checkOrderContainsShopProducts(orderId, req.user.shopId);
                     if (!hasPermission) {
-                        return res.status(403).json({ message: 'You do not have permission to view this order' });
+                        res.status(403).json({ message: 'You do not have permission to view this order' });
+                        return;
                     }
                 } else if (order.userId !== req.user?.id) {
                     // Regular users can only view their own orders
-                    return res.status(403).json({ message: 'You do not have permission to view this order' });
+                    res.status(403).json({ message: 'You do not have permission to view this order' });
+                    return;
                 }
             }
             
-            return res.status(200).json(order);
+            res.status(200).json(order);
         } catch (error) {
             console.error('Error fetching order:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while fetching the order' });
+                res.status(500).json({ message: 'An error occurred while fetching the order' });
             }
         }
     },
@@ -85,22 +88,24 @@ export const orderController = {
                     // Shops can only update orders with their products
                     const hasPermission = await orderService.checkOrderContainsShopProducts(orderId, req.user.shopId);
                     if (!hasPermission) {
-                        return res.status(403).json({ message: 'You do not have permission to update this order' });
+                        res.status(403).json({ message: 'You do not have permission to update this order' });
+                        return;
                     }
                 } else {
                     // Regular users cannot update orders
-                    return res.status(403).json({ message: 'You do not have permission to update orders' });
+                    res.status(403).json({ message: 'You do not have permission to update orders' });
+                    return;
                 }
             }
             
             const order = await orderService.updateOrder(orderId, { orderStatus: status });
-            return res.status(200).json({ message: 'Order updated successfully', order });
+            res.status(200).json({ message: 'Order updated successfully', order });
         } catch (error) {
             console.error('Error updating order:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while updating the order' });
+                res.status(500).json({ message: 'An error occurred while updating the order' });
             }
         }
     },
@@ -109,17 +114,18 @@ export const orderController = {
         try {
             // Only allow admin to delete orders
             if (req.user?.role !== 'ADMIN') {
-                return res.status(403).json({ message: 'You do not have permission to delete orders' });
+                res.status(403).json({ message: 'You do not have permission to delete orders' });
+                return;
             }
             
             await orderService.deleteOrder(req.params.id);
-            return res.status(204).send();
+            res.status(204).send();
         } catch (error) {
             console.error('Error deleting order:', error);
             if (error instanceof Error) {
-                return res.status(400).json({ message: error.message });
+                res.status(400).json({ message: error.message });
             } else {
-                return res.status(500).json({ message: 'An error occurred while deleting the order' });
+                res.status(500).json({ message: 'An error occurred while deleting the order' });
             }
         }
     },
