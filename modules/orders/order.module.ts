@@ -1,15 +1,16 @@
-// Combines order controller/services into a single module
-
+// Combines order controller methods into a module
 import { Router } from 'express';
 import { orderController } from './order.controller';
+import { validate } from '../../middlewares/validation.middleware';
+import { updateOrderSchema } from './order.schema';
+import { validateToken } from '../../middlewares/shop.middleware';
 
 const router = Router();
 
-// Define routes
-router.post('/', orderController.createOrder);
-router.get('/', orderController.getAllOrders);
-router.get('/:id', orderController.getOrder);
-router.put('/:id', orderController.updateOrder);
-router.delete('/:id', orderController.deleteOrder);
+// Order management routes
+router.get('/', validateToken, orderController.getAllOrders);
+router.get('/:id', validateToken, orderController.getOrder);
+router.put('/:id', validateToken, validate({ body: updateOrderSchema }), orderController.updateOrder);
+router.delete('/:id', validateToken, orderController.deleteOrder);
 
 export const orderModule = router;
