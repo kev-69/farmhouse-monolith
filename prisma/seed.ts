@@ -98,7 +98,7 @@ async function main() {
     });
 
     // Create a sample user
-    const user = await prisma.user.create({
+    const user1 = await prisma.user.create({
         data: { 
             email: 'user@example.com', 
             password: await bcrypt.hash('password123', 10),
@@ -109,12 +109,59 @@ async function main() {
         },
     });
 
-    // Create a sample order
-    const order = await prisma.order.create({
+    const user2 = await prisma.user.create({
+        data: { 
+            email: 'bismarkobuobi19@gmail.com', 
+            password: await bcrypt.hash('Kevl@r6069', 10),
+            firstName: 'Bismark',
+            lastName: 'Obuobi',
+            role: 'USER',
+            isVerified: true
+        },
+    });
+
+    const address1 = await prisma.userAddress.create({
         data: {
-            userId: user.id,
+            userId: user1.id,
+            street: '123 Main St',
+            city: 'New York',
+            state: 'NY',
+            zipCode: '10001',
+            country: 'USA',
+        },
+    });
+
+    const address2 = await prisma.userAddress.create({
+        data: {
+            userId: user2.id,
+            street: '456 Elm St',
+            city: 'Los Angeles',
+            state: 'CA',
+            zipCode: '90001',
+            country: 'USA',
+        },
+    });
+
+    // Create a sample order
+    const order1 = await prisma.order.create({
+        data: {
+            userId: user1.id,
             totalAmount: 719.98,
             orderStatus: 'PROCESSING',  // Using a string literal for the status
+            products: {
+                connect: [
+                    { id: product1.id },
+                    { id: product2.id }
+                ]
+            }
+        },
+    });
+
+    const order2 = await prisma.order.create({
+        data: {
+            userId: user2.id,
+            totalAmount: 719.98,
+            orderStatus: 'DELIVERED',  // Using a string literal for the status
             products: {
                 connect: [
                     { id: product1.id },
@@ -127,7 +174,7 @@ async function main() {
     // Create order items (new relationship)
     await prisma.orderItem.create({
         data: {
-            orderId: order.id,
+            orderId: order1.id,
             productId: product1.id,
             quantity: 1,
             price: 699.99,
@@ -136,7 +183,7 @@ async function main() {
 
     await prisma.orderItem.create({
         data: {
-            orderId: order.id,
+            orderId: order2.id,
             productId: product2.id,
             quantity: 1,
             price: 19.99,
@@ -146,9 +193,18 @@ async function main() {
     // Create a sample payment
     await prisma.payment.create({
         data: {
-            orderId: order.id,
+            orderId: order1.id,
             amount: 719.98,
             method: 'CREDIT_CARD',
+            status: 'COMPLETED',
+        },
+    });
+
+    await prisma.payment.create({
+        data: {
+            orderId: order2.id,
+            amount: 850.00,
+            method: 'MOMO',
             status: 'COMPLETED',
         },
     });
