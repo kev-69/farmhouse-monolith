@@ -3,9 +3,13 @@ import { json } from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import { routes } from './routes';
+import { connectRedis } from '../../../config/redis-config';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Connect to Redis
+connectRedis()
 
 // Middleware
 app.use(json());
