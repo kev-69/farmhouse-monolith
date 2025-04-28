@@ -7,6 +7,7 @@ import { createProductSchema, updateProductSchema } from './product.schema';
 
 // middlewares to authorize shops to add products, update products they own, and delete products they own
 import { validateToken, verifyShop, verifyProductOwnership } from '../../middlewares/shop.middleware';
+import { upload } from '../../middlewares/upload';
 
 const router = Router();
 
@@ -14,9 +15,11 @@ const router = Router();
 router.post('/add-product', 
     validateToken, 
     verifyShop,
-    validate({ body: createProductSchema }), // Validate product data
+    upload.array('productImages', 10),
+    validate({ body: createProductSchema }),
     productController.createProduct
 );
+
 router.get('/all-products', productController.getAllProducts);
 router.get('/product/:id', productController.getProduct);
 
@@ -24,6 +27,7 @@ router.put('/update-product/:id',
     validateToken,
     verifyShop,
     verifyProductOwnership, // Verify ownership of the product
+    upload.array('productImages', 10),
     validate({ body: updateProductSchema }), // Validate product data
     productController.updateProduct
 );
