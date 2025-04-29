@@ -1,6 +1,9 @@
 // Handles CRUD routes for products
 import { Request, Response } from 'express';
 import { productService } from './product.service';
+import { AppError } from "../../utils/errors";
+import { successResponse, errorResponse } from "../../utils/response";
+
 // Extend the Request interface to include the 'shop' property
 interface AuthRequest extends Request {
     user?: { 
@@ -18,19 +21,19 @@ export const productController = {
         try {
             // Ensure user is authenticated
             if (!req.user?.shopId) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
             // check if shop is verified before allowing to add products
             if (!req.user?.verified) {
-                res.status(403).json({ message: 'Only verified shops can add products' });
+                res.status(403).json(errorResponse('Only verified shops can add products'));
                 return;
             }
 
             // Check if files exist and handle both array and object format
             if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {
-                res.status(400).json({ message: 'At least one product image is required' });
+                res.status(400).json(errorResponse('At least one product image is required'));
                 return;
             }
 
@@ -53,10 +56,12 @@ export const productController = {
             const fileArray = Array.isArray(req.files) ? req.files : Object.values(req.files).flat();
             const product = await productService.createProduct(productData, fileArray);
 
-            res.status(201).json({ message: 'Product added successfully', product });
+            res.status(201).json(successResponse('Product created successfully', product));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -67,10 +72,12 @@ export const productController = {
         try {
             const products = await productService.getAllProducts();
 
-            res.status(200).json(products);
+            res.status(200).json(successResponse('Products retrieved successfully', products));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -81,10 +88,12 @@ export const productController = {
         try {
             const product = await productService.getProduct(req.params.id);
 
-            res.status(200).json(product);
+            res.status(200).json(successResponse('Product retrieved successfully', product));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -97,7 +106,7 @@ export const productController = {
             const shopId = req.user?.shopId;
 
             if (!shopId) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -107,13 +116,14 @@ export const productController = {
                 undefined;
 
             const product = await productService.updateProduct(id, req.body, shopId, fileArray);
-            res.status(200).json({ message: 'Product updated successfully', product });
+            res.status(200).json(successResponse('Product updated successfully', product));
         } catch (error) {
-            console.error(error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while updating the product' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -125,10 +135,12 @@ export const productController = {
                 req.user?.shopId || ''
             );
 
-            res.status(204).send();
+            res.status(204).json(successResponse('Product deleted successfully'));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
