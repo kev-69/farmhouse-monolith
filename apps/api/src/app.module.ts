@@ -5,7 +5,7 @@ import { authModule } from '../../../modules/auth/user.auth.module';
 import { productModule } from '../../../modules/products/product.module';
 import { categoryModule } from '../../../modules/categories/category.module';
 import { orderModule } from '../../../modules/orders/order.module';
-import { paymentModule } from '../../../modules/payments/payment,module';
+import { paymentModule } from '../../../modules/payments/payment.module';
 import { shopAuthModule } from '../../../modules/auth/shop.auth.module';
 import { shopModule } from '../../../modules/shops/shop.module';
 import { cartModule } from '../../../modules/orders/cart.module';
