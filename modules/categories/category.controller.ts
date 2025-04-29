@@ -1,7 +1,8 @@
 // Handles CRUD routes for categories
-
 import { Request, Response } from 'express';
 import { categoryService } from './category.service';
+import { AppError } from "../../utils/errors";
+import { successResponse, errorResponse } from "../../utils/response";
 
 // Define interface to extend Express Request
 interface AuthRequest extends Request {
@@ -29,10 +30,12 @@ export const categoryController = {
 
             const category = await categoryService.createCategory(categoryData);
 
-            res.status(201).json({ message: 'New category created successfully', category });
+            res.status(201).json(successResponse('New category created successfully', category));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -43,10 +46,12 @@ export const categoryController = {
         try {
             const categories = await categoryService.getAllCategories();
 
-            res.status(200).json(categories);
+            res.status(200).json(successResponse('Categories retrieved successfully', categories));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -57,10 +62,12 @@ export const categoryController = {
         try {
             const category = await categoryService.getCategory(req.params.id);
 
-            res.status(200).json(category);
+            res.status(200).json(successResponse('Category retrieved successfully', category));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -75,10 +82,12 @@ export const categoryController = {
                 req.user?.shopId || ''
             );
 
-            res.status(200).json(category);
+            res.status(200).json(successResponse('Category updated successfully', category));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
@@ -92,10 +101,12 @@ export const categoryController = {
                 req.user?.shopId || ''
             );
 
-            res.status(204).send();
+            res.status(204).json(successResponse('Category deleted successfully'));
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
