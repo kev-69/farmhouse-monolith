@@ -7,7 +7,7 @@ import { productModule } from '../../../../modules/products/product.module';
 import { categoryModule } from '../../../../modules/categories/category.module';
 import { orderModule } from '../../../../modules/orders/order.module';
 import { cartModule } from '../../../../modules/orders/cart.module';
-import { paymentModule } from '../../../../modules/payments/payment,module';
+import { paymentModule } from '../../../../modules/payments/payment.module';
 
 const router = Router();
 
