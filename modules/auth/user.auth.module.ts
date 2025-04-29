@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authController } from './user.auth.controller';
-import { authMiddlewares } from '../../middlewares/auth.middleware';
+import { authLimiter, authMiddlewares } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -23,11 +23,13 @@ import { loginSchema, signupSchema, refreshTokenSchema } from './user.auth.schem
 router.post('/signup', 
     signupMiddlewares,
     validate({ body: signupSchema }), 
+    authLimiter,
     authController.signup
 );
 router.post('/login', 
     loginMiddlewares, 
     validate({ body:loginSchema }),
+    authLimiter,
     authController.login
 );
 router.post('/refresh-token', 
