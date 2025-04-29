@@ -32,7 +32,7 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // Routes
-app.use('/api', routes);
+app.use('/api/v1', routes);
 app.use('/api-docs', serve, setup(swaggerDocs));
 
 // Start server
