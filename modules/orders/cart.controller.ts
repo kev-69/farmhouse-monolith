@@ -2,6 +2,8 @@
 import { Request, Response } from 'express';
 import { prisma } from './order.service';
 import { redisClient } from '../../config/redis-config';
+import { AppError } from "../../utils/errors";
+import { successResponse, errorResponse } from "../../utils/response";
 
 // Extend Request to include user
 interface AuthRequest extends Request {
@@ -18,7 +20,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -27,12 +29,12 @@ export const cartController = {
             // Check if product exists and has enough stock
             const product = await prisma.product.findUnique({ where: { id: productId } });
             if (!product) {
-                res.status(404).json({ message: 'Product not found' });
+                res.status(404).json(errorResponse('Product not found'));
                 return;
             }
 
             if (product.stockQuantity < quantity) {
-                res.status(400).json({ message: 'Not enough stock available' });
+                res.status(400).json(errorResponse('Not enough stock available'));
                 return;
             }
 
@@ -45,7 +47,7 @@ export const cartController = {
             
             // Check if new quantity exceeds stock
             if (newQuantity > product.stockQuantity) {
-                res.status(400).json({ message: 'Cannot add more of this item (exceeds available stock)' });
+                res.status(400).json(errorResponse('Cannot add more of this item (exceeds available stock)'));
                 return;
             }
 
@@ -55,17 +57,15 @@ export const cartController = {
             // Set cart expiry (24 hours)
             await redisClient.expire(cartKey, 24 * 60 * 60);
             
-            res.status(200).json({ 
-                message: 'Product added to cart',
-                productId,
-                quantity: newQuantity
-            });
+            res.status(200).json(successResponse('Product added to cart', {
+                productId, quantity: newQuantity})) 
         } catch (error) {
-            console.error('Error adding to cart:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while adding to cart' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -74,7 +74,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -84,7 +84,7 @@ export const cartController = {
             // Validate product
             const product = await prisma.product.findUnique({ where: { id: productId } });
             if (!product) {
-                res.status(404).json({ message: 'Product not found' });
+                res.status(404).json(errorResponse('Product not found'));
                 return;
             }
             
@@ -92,30 +92,28 @@ export const cartController = {
             const cartKey = `cart:${req.user.id}`;
             const exists = await redisClient.hExists(cartKey, productId);
             if (!exists) {
-                res.status(404).json({ message: 'Product not found in cart' });
+                res.status(404).json(errorResponse('Product not found in cart'));
                 return;
             }
             
             // Check stock
             if (quantity > product.stockQuantity) {
-                res.status(400).json({ message: 'Not enough stock available' });
+                res.status(400).json(errorResponse('Not enough stock available'));
                 return;
             }
             
             // Update quantity
             await redisClient.hSet(cartKey, productId, quantity.toString());
             
-            res.status(200).json({ 
-                message: 'Cart updated successfully',
-                productId,
-                quantity
-            });
+            res.status(200).json(successResponse('Cart updated successfully', {
+                productId, quantity }));
         } catch (error) {
-            console.error('Error updating cart:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while updating cart' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -124,7 +122,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -134,20 +132,21 @@ export const cartController = {
             // Check if product exists in cart
             const exists = await redisClient.hExists(cartKey, productId);
             if (!exists) {
-                res.status(404).json({ message: 'Product not found in cart' });
+                res.status(404).json(errorResponse('Product not found in cart'));
                 return;
             }
             
             // Remove product from cart
             await redisClient.hDel(cartKey, productId);
             
-            res.status(200).json({ message: 'Product removed from cart' });
+            res.status(200).json(errorResponse('Product removed from cart'));
         } catch (error) {
-            console.error('Error removing from cart:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while removing from cart' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -156,7 +155,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -166,7 +165,7 @@ export const cartController = {
             const cartItems = await redisClient.hGetAll(cartKey);
             
             if (!cartItems || Object.keys(cartItems).length === 0) {
-                res.status(200).json({ items: [], totalAmount: 0 });
+                res.status(200).json(successResponse('Cart is empty', { items: [], totalAmount: 0 }));
                 return;
             }
             
@@ -205,16 +204,17 @@ export const cartController = {
             const totalAmount = validProducts.reduce((sum, product) => 
                 sum + (product?.subtotal || 0), 0);
             
-            res.status(200).json({ 
+            res.status(200).json(successResponse('Cart retrieved successfully', { 
                 items: validProducts,
                 totalAmount
-            });
+            }));
         } catch (error) {
-            console.error('Error fetching cart:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while fetching cart' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -223,7 +223,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -232,13 +232,14 @@ export const cartController = {
             // Delete the entire cart
             await redisClient.del(cartKey);
             
-            res.status(200).json({ message: 'Cart cleared successfully' });
+            res.status(200).json(successResponse('Cart cleared successfully'));
         } catch (error) {
-            console.error('Error clearing cart:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred while clearing cart' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     },
@@ -247,7 +248,7 @@ export const cartController = {
         try {
             // Check if user is authenticated
             if (!req.user?.id) {
-                res.status(401).json({ message: 'Authentication required' });
+                res.status(401).json(errorResponse('Authentication required'));
                 return;
             }
 
@@ -258,11 +259,11 @@ export const cartController = {
             const cartItems = await redisClient.hGetAll(cartKey);
             
             if (!cartItems || Object.keys(cartItems).length === 0) {
-                res.status(400).json({ message: 'Your cart is empty' });
+                res.status(400).json(errorResponse('Your cart is empty'));
                 return;
             }
             
-            const { paymentMethod} = req.body;
+            const { paymentMethod } = req.body;
             
             // Fetch product details and validate stock
             const orderItems = await Promise.all(
@@ -347,16 +348,21 @@ export const cartController = {
             // Clear the cart after successful checkout
             await redisClient.del(cartKey);
             
-            res.status(201).json({
-                message: 'Order placed successfully',
-                order
-            });
+            res.status(201).json(successResponse('Order placed successfully', {
+                order: {
+                    id: order.id,
+                    totalAmount: order.totalAmount,
+                    orderStatus: order.orderStatus,
+                    orderItems: order.orderItems
+                }
+            }));
         } catch (error) {
-            console.error('Error during checkout:', error);
-            if (error instanceof Error) {
-                res.status(400).json({ message: error.message });
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
             } else {
-                res.status(500).json({ message: 'An error occurred during checkout' });
+                res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
     }
