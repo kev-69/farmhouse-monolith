@@ -8,15 +8,23 @@ const router = Router()
 // middlewares to validate product data
 import { validate } from '../../middlewares/validation.middleware';
 import { signupSchema, loginSchema } from './shop.auth.schema';
-import { authLimiter } from '../../middlewares/auth.middleware';
+import { authLimiter, authMiddlewares } from '../../middlewares/auth.middleware';
+
+const signupMiddlewares = [
+    authMiddlewares.sanitizeInput,
+    authMiddlewares.validateEmail,
+    authMiddlewares.validatePassword
+];
 
 // define routes
 router.post('/signup',
+    signupMiddlewares,
     validate({ body: signupSchema }),
     authLimiter,
     authController.signup
 )
 router.post('/login', 
+    authMiddlewares.sanitizeInput,
     validate({ body: loginSchema }),
     authLimiter,
     authController.login
