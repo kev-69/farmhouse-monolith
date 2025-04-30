@@ -1,0 +1,43 @@
+services:
+  # Web service
+  - type: web
+    name: farmhouse-api
+    runtime: node # Specify the runtime environment
+    dockerfilePath: ./docker/Dockerfile
+    dockerContext: .
+    plan: starter
+    numInstances: 1
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false  # This will prompt you to enter the value securely
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: DB_URL
+        fromDatabase:
+          name: farmhouse-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: farmhouse-redis
+          property: connectionString
+
+  # Redis service
+  - type: redis
+    name: farmhouse-redis
+    ipAllowList: []  # Allow all traffic
+    plan: starter
+
+databases:
+  - name: farmhouse-db
+    databaseName: farmhouse_db
+    user: farmhouse_user
+    plan: starter
