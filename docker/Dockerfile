@@ -38,8 +38,12 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 
+# Copy initialization script
+COPY docker/init.sh /app/init.sh
+RUN chmod +x /app/init.sh
+
 # Expose the application port
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "dist/apps/api/src/main.js"]
+# Start the application using the initialization script
+CMD ["/app/init.sh"]
