@@ -1,1 +1,0 @@
-// Optional: wrapper around Prisma user model
