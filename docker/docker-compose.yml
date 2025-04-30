@@ -11,14 +11,14 @@ services:
       - postgres
       - redis
     environment:
-      - DB_URL=postgresql://postgres:farmhousepassword@postgres:5432/farmhouse_db
+      - DB_URL=postgresql://postgres:${DB_PASSWORD}@postgres:5432/farmhouse_db
       - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=7f58e80283e54ef3f8ad1686425454705a45d06e18ecfa096ef826912af354e52938246e50a881683bc641f61a1d05dd006a738d5b217bc416d309542df4a66af2c4694b7a4b3715c3f02ed594b860ae84e8a03524cad830ba8763e4be291427f24947ace2feefb33da92ea9de8a6170e05b8b317f699a21bffd4a040f927b82
+      - JWT_SECRET=${JWT_SECRET}
       - PORT=3000
       - NODE_ENV=development
-      - CLOUDINARY_CLOUD_NAME=dxykzipbv
-      - CLOUDINARY_API_KEY=638614394762315
-      - CLOUDINARY_API_SECRET=avUwR8LcMxyzPpRwdgj3WiHwFCk
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
 
   postgres:
     image: postgres:15.0-alpine
@@ -26,7 +26,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: farmhousepassword
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: farmhouse_db
     volumes:
       - postgres_data:/var/lib/postgresql/data # Correctly map named volume
@@ -40,7 +40,7 @@ services:
     volumes:
       - redis_data:/data # Correctly map named volume
     ports:
-      - "6379:6379"
+      - "6378:6379"
 
 volumes:
   postgres_data:
