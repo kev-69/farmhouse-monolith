@@ -13,7 +13,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
-        sync: false  # This will prompt you to enter the value securely
+        sync: false 
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
