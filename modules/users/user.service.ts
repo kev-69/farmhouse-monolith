@@ -1,7 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-import { get } from 'http';
-
-export const prisma = new PrismaClient();
+import { prisma } from '../../shared/prisma';
 
 export const userService = {
     addAddress: async (userId: string, address: any) => {
@@ -12,7 +9,6 @@ export const userService = {
             }
         });
     },
-
 
     updateAddress: async (userId: string, addressId: string, address: any) => {
         const existingAddress = await prisma.userAddress.findUnique({ where: { id: addressId } });
