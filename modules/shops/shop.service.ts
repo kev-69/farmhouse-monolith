@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-export const prisma = new PrismaClient()
+import { prisma } from '../../shared/prisma';
 
 export const shopService = {
     getShop: async (id: string) => {
