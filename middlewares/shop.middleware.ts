@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../modules/categories/category.service'; // Reusing Prisma client
+import { prisma } from '../shared/prisma';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
