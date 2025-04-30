@@ -45,7 +45,7 @@ export const userController = {
     getAddresses: async (req: Request, res: Response) => {
         try {
             const addresses = await userService.getAddresses(req.user.userId);
-            res.status(200).json(successResponse("Addresses retrieved successfully", {data: addresses}));
+            res.status(200).json(successResponse("Addresses retrieved successfully", addresses));
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -75,7 +75,7 @@ export const userController = {
     getUser: async (req: Request, res: Response) => {
         try {
             const user = await userService.getUser(req.user.userId);
-            res.status(200).json(successResponse('User profile retrieved successfully', {data: user}));
+            res.status(200).json(successResponse('User profile retrieved successfully', user));
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
