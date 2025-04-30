@@ -1,6 +1,6 @@
 // Handles cart operations
 import { Request, Response } from 'express';
-import { prisma } from './order.service';
+import { prisma } from '../../shared/prisma';
 import { redisClient } from '../../config/redis-config';
 import { AppError } from "../../utils/errors";
 import { successResponse, errorResponse } from "../../utils/response";
