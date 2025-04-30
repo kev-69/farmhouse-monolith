@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { uploadImage } from '../../config/cloudinary-config'; // Assuming you have a utility function for image upload
-
-export const prisma = new PrismaClient();
+import { prisma } from '../../shared/prisma';
+import { uploadImage } from '../../config/cloudinary-config';
 
 export const productService = {
     createProduct: async (data: any, files: Express.Multer.File[]) => {
