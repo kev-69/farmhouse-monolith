@@ -1,8 +1,8 @@
 services:
-  # Web service
+  # Web service - DOCKER APPROACH
   - type: web
     name: farmhouse-api
-    runtime: node # Specify the runtime environment
+    runtime: docker
     dockerfilePath: ./docker/Dockerfile
     dockerContext: .
     plan: starter
