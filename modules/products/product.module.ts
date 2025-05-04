@@ -20,8 +20,13 @@ router.post('/add-product',
     productController.createProduct
 );
 
-router.get('/all-products', productController.getAllProducts);
-router.get('/product/:id', productController.getProduct);
+router.get('/all-products', 
+    productController.getAllProducts
+);
+
+router.get('/product/:id', 
+    productController.getProduct
+);
 
 router.put('/update-product/:id', 
     validateToken,
