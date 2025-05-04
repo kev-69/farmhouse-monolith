@@ -209,6 +209,91 @@ async function main() {
         },
     });
 
+    // --- Add Wishlist Items ---
+    console.log('Creating sample wishlist items...');
+    
+    // Add wishlist items for user1
+    await prisma.wishlist.create({
+        data: {
+            userId: user1.id,
+            productId: laptop.id,
+        }
+    });
+    
+    await prisma.wishlist.create({
+        data: {
+            userId: user1.id,
+            productId: dress.id,
+        }
+    });
+
+    // Add wishlist items for user2
+    await prisma.wishlist.create({
+        data: {
+            userId: user2.id,
+            productId: product1.id,
+        }
+    });
+    
+    // --- Add Carts and Cart Items ---
+    console.log('Creating sample carts and cart items...');
+    
+    // Create cart for user1 (authenticated user cart)
+    const cart1 = await prisma.cart.create({
+        data: {
+            userId: user1.id
+        }
+    });
+    
+    // Add items to user1's cart
+    await prisma.cartItem.create({
+        data: {
+            cartId: cart1.id,
+            productId: product1.id, // Smartphone
+            quantity: 1
+        }
+    });
+
+    await prisma.cartItem.create({
+        data: {
+            cartId: cart1.id,
+            productId: laptop.id, // Laptop
+            quantity: 2
+        }
+    });
+    
+    // Create cart for user2
+    const cart2 = await prisma.cart.create({
+        data: {
+            userId: user2.id
+        }
+    });
+    
+    // Add items to user2's cart
+    await prisma.cartItem.create({
+        data: {
+            cartId: cart2.id,
+            productId: product2.id, // T-Shirt
+            quantity: 3
+        }
+    });
+
+    // Create a guest cart (session-based)
+    const guestCart = await prisma.cart.create({
+        data: {
+            sessionId: "sample-session-id-12345"
+        }
+    });
+    
+    // Add items to guest cart
+    await prisma.cartItem.create({
+        data: {
+            cartId: guestCart.id,
+            productId: dress.id, // Designer Dress
+            quantity: 1
+        }
+    });
+
     console.log('Database has been seeded successfully!');
 }
 
