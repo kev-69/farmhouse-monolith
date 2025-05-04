@@ -57,7 +57,8 @@ async function main() {
             stockQuantity: 100,  // Added required field
             categoryId: electronics.id,
             shopId: shop1.id,
-            productImages: ['smartphone1.jpg', 'smartphone2.jpg']
+            productImages: ['smartphone1.jpg', 'smartphone2.jpg'],
+            inStock: true
         },
     });
 
@@ -69,7 +70,8 @@ async function main() {
             stockQuantity: 500,  // Added required field
             categoryId: clothing.id,
             shopId: shop2.id,
-            productImages: ['tshirt1.jpg', 'tshirt2.jpg']
+            productImages: ['tshirt1.jpg', 'tshirt2.jpg'],
+            inStock: true
         },
     });
 
@@ -82,6 +84,7 @@ async function main() {
             categoryId: electronics.id,
             shopId: shop1.id,
             productImages: ['laptop1.jpg', 'laptop2.jpg'],
+            inStock: true
         },
     });
 
@@ -94,6 +97,7 @@ async function main() {
             categoryId: clothing.id,
             shopId: shop2.id,
             productImages: ['dress1.jpg', 'dress2.jpg'],
+            inStock: true,
         },
     });
 
