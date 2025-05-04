@@ -19,8 +19,13 @@ router.post('/add-category',
     categoryController.createCategory
 );
 
-router.get('/all-categories', categoryController.getAllCategories);
-router.get('/category/:id', categoryController.getCategory);
+router.get('/all-categories', 
+    categoryController.getAllCategories
+);
+
+router.get('/category/:id', 
+    categoryController.getCategory
+);
 
 router.put('/update-category/:id', 
     validateToken, 
