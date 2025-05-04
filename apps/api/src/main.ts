@@ -3,17 +3,17 @@ import { json } from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import { routes } from './routes';
-import { connectRedis } from '../../../config/redis-config';
 import dotenv from 'dotenv';
 dotenv.config();
 import { serve, setup } from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { swaggerOptions } from '../../../utils/helpers';
+import { initScheduledJobs } from '../../../utils/scheduler';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const requiredEnvVars = ['JWT_SECRET', 'DB_URL', 'REDIS_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
+const requiredEnvVars = ['JWT_SECRET', 'DB_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Error: Environment variable ${envVar} is not set`);
@@ -21,8 +21,8 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-// Connect to Redis
-connectRedis()
+// initilize scgeduled jobs
+initScheduledJobs();
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
