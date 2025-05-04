@@ -5,7 +5,7 @@ import { paymentController } from './payment.controller';
 const router = Router();
 
 // Define routes
-router.post('/', 
+router.post('/add', 
     paymentController.createPayment
 );
 
@@ -17,10 +17,10 @@ router.get('/:id',
     paymentController.getPayment
 );
 
-router.put('/:id', 
+router.put('/update/:id', 
     paymentController.updatePayment
 );
-router.delete('/:id', 
+router.delete('/delete/:id', 
     paymentController.deletePayment
 );
 
