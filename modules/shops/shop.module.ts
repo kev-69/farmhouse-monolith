@@ -2,22 +2,24 @@ import { Router } from 'express'
 import { shopController } from './shop.controller'
 
 // middlewares
-import validateToken from '../../middlewares/user.middleware'
+import { validateToken, verifyShop } from '../../middlewares/shop.middleware'
 
 const router = Router()
 
 // define routes
 router.get('/profile', 
     validateToken, 
+    verifyShop,
     shopController.getShop
 )
 
-router.put('/update-profile', 
+router.put('/update', 
     validateToken, 
+    verifyShop,
     shopController.updateShop
 )
 
-router.delete('/delete-profile', 
+router.delete('/delete', 
     validateToken, 
     shopController.deleteShop
 )
