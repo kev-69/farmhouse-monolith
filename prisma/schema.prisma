@@ -49,6 +49,7 @@ model Product {
   description   String?
   stockQuantity Int
   categoryId    String
+  inStock       Boolean
   category      Category @relation(fields: [categoryId], references: [id])
   orders        Order[]  @relation("ProductOrder")
   shopId        String
