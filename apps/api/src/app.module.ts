@@ -8,7 +8,8 @@ import { orderModule } from '../../../modules/orders/order.module';
 import { paymentModule } from '../../../modules/payments/payment.module';
 import { shopAuthModule } from '../../../modules/auth/shop.auth.module';
 import { shopModule } from '../../../modules/shops/shop.module';
-import { cartModule } from '../../../modules/orders/cart.module';
+import { cartModule } from '../../../modules/cart/cart.module';
+import { wishlistModule } from '../../../modules/wishlist/wishlist.module';
 
 const appRouter = Router();
 
@@ -20,6 +21,7 @@ appRouter.use('shops', shopModule)
 appRouter.use('/products', productModule);
 appRouter.use('/categories', categoryModule);
 appRouter.use('/cart', cartModule);
+appRouter.use('/wishlist', wishlistModule);
 appRouter.use('/orders', orderModule);
 appRouter.use('/payments', paymentModule);
 
