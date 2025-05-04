@@ -6,8 +6,9 @@ import { shopModule } from '../../../../modules/shops/shop.module';
 import { productModule } from '../../../../modules/products/product.module';
 import { categoryModule } from '../../../../modules/categories/category.module';
 import { orderModule } from '../../../../modules/orders/order.module';
-import { cartModule } from '../../../../modules/orders/cart.module';
+import { cartModule } from '../../../../modules/cart/cart.module';
 import { paymentModule } from '../../../../modules/payments/payment.module';
+import { wishlistModule } from '../../../../modules/wishlist/wishlist.module';
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use('/categories', categoryModule);
 router.use('/orders', orderModule);
 router.use('/cart', cartModule);
 router.use('/payments', paymentModule);
+router.use('/wishlist', wishlistModule)
 
 export { router as routes };
