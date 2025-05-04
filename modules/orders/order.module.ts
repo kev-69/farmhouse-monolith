@@ -8,9 +8,25 @@ import { validateToken } from '../../middlewares/shop.middleware';
 const router = Router();
 
 // Order management routes
-router.get('/', validateToken, orderController.getAllOrders);
-router.get('/:id', validateToken, orderController.getOrder);
-router.put('/:id', validateToken, validate({ body: updateOrderSchema }), orderController.updateOrder);
-router.delete('/:id', validateToken, orderController.deleteOrder);
+router.get('/', 
+    validateToken, 
+    orderController.getAllOrders
+);
+
+router.get('/:id', 
+    validateToken, 
+    orderController.getOrder
+);
+
+router.put('/:id', 
+    validateToken, 
+    validate({ body: updateOrderSchema }), 
+    orderController.updateOrder
+);
+
+router.delete('/:id', 
+    validateToken, 
+    orderController.deleteOrder
+);
 
 export const orderModule = router;
