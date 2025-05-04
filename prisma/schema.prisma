@@ -23,6 +23,8 @@ model User {
   isVerified  Boolean
   orders      Order[]
   addresses   UserAddress[]
+  carts       Cart[]
+  wishlists   Wishlist[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -53,6 +55,8 @@ model Product {
   shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
   productImages String[]
   orderItems    OrderItem[]
+  wishlistItems Wishlist[]
+  cartItems     CartItem[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -66,6 +70,43 @@ model Category {
   products    Product[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Wishlist {
+  id          String  @id  @default(uuid())
+  userId      String
+  productId   String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Cart {
+  id          String  @id   @default(uuid())
+  userId      String?
+  sessionId   String? @unique
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CartItem[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([sessionId])
+}
+
+model CartItem {
+  id            String   @id  @default(uuid())
+  cartId        String
+  productId     String
+  quantity      Int     @default(1)
+  cart          Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [productId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([cartId, productId])
 }
 
 enum OrderStatus {
