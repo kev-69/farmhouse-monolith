@@ -24,17 +24,6 @@ services:
         fromDatabase:
           name: farmhouse-db
           property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: farmhouse-redis
-          property: connectionString
-
-  # Redis service
-  - type: redis
-    name: farmhouse-redis
-    ipAllowList: []  # Allow all traffic
-    plan: starter
 
 databases:
   - name: farmhouse-db
