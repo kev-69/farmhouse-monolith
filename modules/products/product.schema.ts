@@ -15,6 +15,7 @@ export const createProductSchema = z.object({
         (val) => val === '' ? undefined : Number(val),
         z.number().int().positive({ message: 'Stock quantity must be a positive integer' })
     ),
+    inStock: z.boolean().default(true),
     categoryId: z.string().min(1, { message: 'Category ID is required' }),
     // Make productImages optional here since we'll add them after file upload
     productImages: z.array(z.string()).min(1).optional(),
