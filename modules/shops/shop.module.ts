@@ -24,4 +24,16 @@ router.delete('/delete',
     shopController.deleteShop
 )
 
+router.get('/', 
+    shopController.getAllShops
+)
+
+router.get('/:id', 
+    shopController.getShopById
+)
+
+router.get('/:shopId/products', 
+    shopController.getShopProducts
+)
+
 export const shopModule = router
