@@ -17,5 +17,20 @@ export const shopService = {
 
     deleteShop: async (id: string) => {
         return await prisma.shop.delete({ where: { id } })
-    }
+    },
+
+    getAllShops: async () => {
+        const shops = await prisma.shop.findMany()
+        return shops;
+    },
+
+    getShopProducts: async (shopId: string) => {
+        const products = await prisma.product.findMany({ where: { shopId } })
+        return products;
+    },
+
+    getShopById: async (id: string) => {
+        const shop = await prisma.shop.findUnique({ where: { id } })
+        return shop;
+    },
 }
