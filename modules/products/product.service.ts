@@ -24,11 +24,22 @@ export const productService = {
     },
 
     getAllProducts: async () => {
-        return await prisma.product.findMany();
+        return await prisma.product.findMany({
+            include: {
+                shop: true,
+                category: true,
+            },
+        });
     },
 
     getProduct: async (id: string) => {
-        const product = await prisma.product.findUnique({ where: { id } });
+        const product = await prisma.product.findUnique({ 
+            where: { id },
+            include: {
+                shop: true,
+                category: true,
+            } 
+        });
         if (!product) {
             throw new Error('Product not found');
         }
