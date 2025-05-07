@@ -15,7 +15,7 @@ export const userController = {
     addAddress: async (req: Request, res: Response) => {
         try {
             const address = await userService.addAddress(req.user.userId, req.body);
-            res.status(200).json(successResponse("Address added successfully", {data: address}));
+            res.status(200).json(successResponse("Address added successfully", address));
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -30,7 +30,7 @@ export const userController = {
     updateAddress: async (req: Request, res: Response) => {
         try {
             const address = await userService.updateAddress(req.user.userId, req.params.addressId, req.body);
-            res.status(200).json(successResponse('Address updated successfully', {data: address}));
+            res.status(200).json(successResponse('Address updated successfully', address));
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -42,9 +42,9 @@ export const userController = {
         }
     },
 
-    getAddresses: async (req: Request, res: Response) => {
+    getUserAddresses: async (req: Request, res: Response) => {
         try {
-            const addresses = await userService.getAddresses(req.user.userId);
+            const addresses = await userService.getUserAddress(req.user.userId);
             res.status(200).json(successResponse("Addresses retrieved successfully", addresses));
         } catch (error) {
             if (error instanceof AppError) {
