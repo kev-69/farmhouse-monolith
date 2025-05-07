@@ -10,6 +10,14 @@ export const userService = {
         });
     },
 
+    getUserAddress: async (userId: string) => {
+        const address = await prisma.userAddress.findFirst({ where: { userId } });
+        if (!address) {
+            throw new Error('Address not found');
+        }
+        return address;
+    },
+
     updateAddress: async (userId: string, addressId: string, address: any) => {
         const existingAddress = await prisma.userAddress.findUnique({ where: { id: addressId } });
         if (!existingAddress) {
@@ -22,10 +30,6 @@ export const userService = {
             where: { id: addressId },
             data: address
         });
-    },
-
-    getAddresses: async (userId: string) => {
-        return await prisma.userAddress.findMany({ where: { userId } });
     },
 
     deleteAddress: async (userId: string, addressId: string) => {
