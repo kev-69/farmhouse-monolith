@@ -65,7 +65,20 @@ export const wishlistService = {
             price: true,
             productImages: true,
             stockQuantity: true,
-            shopId: true
+            shopId: true,
+            // include shop and category if needed
+            shop: {
+              select: {
+                id: true,
+                name: true
+              }
+            },
+            category: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           }
         }
       },
