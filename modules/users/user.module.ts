@@ -13,31 +13,32 @@ router.get('/profile',
     userController.getUser
 );
 
-router.put('/update-profile', 
+router.put('/update', 
     validateToken, 
     userController.updateUser
 );
-router.delete('/delete-profile', 
+
+router.delete('/delete', 
     validateToken, 
     userController.deleteUser
 );
 
-router.post('/profile/add-address', 
+router.post('/profile/address/add', 
     validateToken, 
     userController.addAddress
 );
 
-router.put('/profile/update-address/:addressId', 
+router.put('/profile/update/:addressId', 
     validateToken, 
     userController.updateAddress
 );
 
-router.get('/addresses', 
+router.get('/profile/addresses', 
     validateToken, 
-    userController.getAddresses
+    userController.getUserAddresses
 );
 
-router.delete('/profile/delete-address/:addressId', 
+router.delete('/profile/delete/:addressId', 
     validateToken, 
     userController.deleteAddress
 );
