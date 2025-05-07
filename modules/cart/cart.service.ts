@@ -184,7 +184,13 @@ export const cartService = {
                 price: true,
                 productImages: true,
                 stockQuantity: true,
-                shopId: true
+                shopId: false,
+                shop: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                },
               }
             }
           }
