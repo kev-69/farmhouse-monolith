@@ -19,6 +19,7 @@ model User {
   password    String
   firstName   String
   lastName    String
+  phone       String?
   role        String
   isVerified  Boolean
   orders      Order[]
@@ -157,10 +158,12 @@ model Shop {
   ownerName   String
   email       String     @unique
   password    String
+  description String
   location    String
   phoneNumber String
   role        String
   isVerified  Boolean
+  isApproved  Boolean
   categories  Category[]
   products    Product[]
   createdAt   DateTime @default(now())
