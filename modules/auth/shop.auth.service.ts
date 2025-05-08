@@ -18,9 +18,11 @@ export const authService = {
                 email: data.email,
                 password: hashedPassword,
                 location: data.location,
+                description: data.description,
                 phoneNumber: data.phoneNumber,
                 role: 'SHOP',
-                isVerified: false
+                isVerified: false,
+                isApproved: false
             }
         })
         return shop;
