@@ -17,3 +17,22 @@ export const signupSchema = z.object({
 export const refreshTokenSchema = z.object({
     token: z.string().min(1, { message: 'Token is required' }),
 });
+
+export const passwordResetRequestSchema = z.object({
+    email: z.string().email('Invalid email format')
+});
+
+export const verifyResetCodeSchema = z.object({
+    email: z.string().email('Invalid email format'),
+    code: z.string().min(6).max(6, 'Code must be 6 characters')
+});
+
+export const setNewPasswordSchema = z.object({
+    email: z.string().email('Invalid email format'),
+    code: z.string().min(6).max(6, 'Code must be 6 characters'),
+    password: z.string().min(8, 'Password must be at least 8 characters')
+});
+
+export const resendVerificationSchema = z.object({
+    email: z.string().email('Invalid email format')
+});
