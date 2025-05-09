@@ -15,3 +15,22 @@ export const loginSchema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
     password: z.string().min(8, { message: 'Password must be at least 8 characters long' })
 })
+
+export const passwordResetRequestSchema = z.object({
+    email: z.string().email({ message: 'Invalid email' })
+})
+
+export const verifyResetCodeSchema = z.object({
+    email: z.string().email({ message: 'Invalid email' }),
+    code: z.string().min(6, { message: 'Code must be 6 characters' })
+})
+
+export const setNewPasswordSchema = z.object({
+    email: z.string().email({ message: 'Invalid email' }),
+    code: z.string().min(6, { message: 'Code must be 6 characters' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters long' })
+})
+
+export const resendVerificationSchema = z.object({
+    email: z.string().email({ message: 'Invalid email' })
+})
