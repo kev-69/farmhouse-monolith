@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { prisma } from '../../shared/prisma'
+import emailService from '../../utils/send.email'
 
 export const authService = {
     signup: async (data: any) => {
@@ -27,6 +28,15 @@ export const authService = {
                 isApproved: false
             }
         })
+
+        // send verification email
+        await emailService.sendShopVerificationEmail(
+            shop.email,
+            shop.id,
+            shop.name,
+            shop.ownerName
+        )
+
         return shop;
     }, 
 
@@ -50,5 +60,49 @@ export const authService = {
             process.env.JWT_SECRET as jwt.Secret, 
             { expiresIn: '24h' }
         );
-    }
+    },
+
+    resetPassword: async (email: string) => {
+        const shop = await prisma.shop.findUnique({ where: { email } });
+        if (!shop) {
+            throw new Error('Shop not found');
+        }
+
+        // Logic to send password reset email
+        await emailService.sendShopPasswordReset(shop.email);
+    },
+
+    verifyCode: async (email: string, code: string) => {
+        const success = await emailService.verifyPasswordResetCode(email, code);
+        if (!success) {
+            throw new Error('Invalid or expired verification code')
+        }
+
+        return { success }
+    },
+
+    setNewPassword: async (email: string, code: string, password: string) => {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const success = await emailService.resetShopPassword(email, code, hashedPassword);
+
+        if (!success) {
+            throw new Error('Failed to reset new password')
+        }
+    },
+
+    verifyEmail: async (token: string) => {
+        const success = await emailService.verifyShopAccount(token);
+        if (!success) {
+            throw new Error('Failed to verify email')
+        }
+        return { success }
+    },
+    
+    resendVerificationEmail: async (email: string) => {
+        const success = await emailService.resendShopVerificationEmail(email);
+        if (!success) {
+            throw new Error('Failed to resend verification email')
+        }
+        return { success }
+    },
 }
