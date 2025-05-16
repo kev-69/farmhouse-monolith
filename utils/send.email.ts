@@ -457,6 +457,25 @@ export const emailService = {
       return false;
     }
   },
+
+  // send shop rejected email
+  sendShopRejectionEmail: async (email: string, shopId: string, shopName: string, ownerName: string): Promise<boolean> => {
+    try {
+      const dashboardLink = `${process.env.FRONTEND_URL}/seller/dashboard`;
+      
+      return await sendEmail(email, 'shopRejected', { 
+        shopName, 
+        ownerName, 
+        email,
+        dashboardLink
+      });
+    } catch (error) {
+      logger.error(`Error in sendShopRejectionEmail: ${error}`);
+      return false;
+    }
+  },
+  // send shop banned email
+  // send shop unbanned email
   
   /**
    * Send order confirmation email
