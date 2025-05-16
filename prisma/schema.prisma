@@ -165,6 +165,7 @@ model Shop {
   role        String
   isVerified  Boolean
   isApproved  Boolean
+  isBanned    Boolean   @default(false)
   categories  Category[]
   products    Product[]
   shopVerificationTokens  ShopVerificationToken[]
