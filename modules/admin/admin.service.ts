@@ -31,20 +31,6 @@ export const AdminService = {
         );
     },
 
-    async getAllShops() {
-        try {
-            const shops = await prisma.shop.findMany({
-                include: {
-                    products: true,
-                },
-            });
-            return shops;
-        } catch (error) {
-            console.error('Error fetching shops:', error);
-            throw new Error('Failed to fetch shops');
-        }
-    },
-
     async getUnapprovedShops() {
         const unapprovedShops = await prisma.shop.findMany({
             where: {
@@ -90,19 +76,19 @@ export const AdminService = {
         return users;
     },
 
-    // async banShop(shopId: string) {
-    //     const shop = await prisma.shop.update({
-    //         where: { id: shopId },
-    //         data: { isBanned: true },
-    //     });
-    //     return shop;
-    // },
+    async banShop(shopId: string) {
+        const shop = await prisma.shop.update({
+            where: { id: shopId },
+            data: { isBanned: true },
+        });
+        return shop;
+    },
 
-    // async unbanShop(shopId: string) {
-    //     const shop = await prisma.shop.update({
-    //         where: { id: shopId },
-    //         data: { isBanned: false },
-    //     });
-    //     return shop;
-    // },
+    async unbanShop(shopId: string) {
+        const shop = await prisma.shop.update({
+            where: { id: shopId },
+            data: { isBanned: false },
+        });
+        return shop;
+    },
 }
