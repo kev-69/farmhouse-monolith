@@ -15,13 +15,18 @@ export const shopService = {
         return await prisma.shop.update({ where: { id }, data })
     },
 
-    deleteShop: async (id: string) => {
-        return await prisma.shop.delete({ where: { id } })
-    },
-
     getAllShops: async () => {
-        const shops = await prisma.shop.findMany()
-        return shops;
+        const shops = await prisma.shop.findMany({
+            where: {
+                isVerified: true,
+                isBanned: false,
+                isApproved: true
+            },
+            include: {
+                products: true,
+            },
+    })
+    return shops;
     },
 
     getShopProducts: async (shopId: string) => {
