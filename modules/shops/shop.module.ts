@@ -19,11 +19,6 @@ router.put('/update',
     shopController.updateShop
 )
 
-router.delete('/delete', 
-    validateToken, 
-    shopController.deleteShop
-)
-
 router.get('/', 
     shopController.getAllShops
 )
