@@ -1,0 +1,11 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `isVerified` on the `User` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "Shop" ADD COLUMN     "isBanned" BOOLEAN NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE "User" DROP COLUMN "isVerified";
