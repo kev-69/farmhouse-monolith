@@ -25,7 +25,8 @@ export const authService = {
                 phoneNumber: data.phoneNumber,
                 role: 'SHOP',
                 isVerified: false,
-                isApproved: false
+                isApproved: false,
+                isBanned: false,
             }
         })
 
@@ -43,8 +44,29 @@ export const authService = {
     login: async (email: string, password: string) => {
         const shop = await prisma.shop.findUnique({ where: { email } });
 
-        if (!shop || !(await bcrypt.compare(password, shop.password))) {
+        if (!shop) {
             throw new Error('Invalid credentials')
+        }
+
+        // check password
+        const isPasswordValid = await bcrypt.compare(password, shop.password);
+        if (!isPasswordValid) {
+            throw new Error('Invalid credentials')
+        }
+
+        // Check if shop is banned
+        if (shop.isBanned) {
+            throw new Error('Your shop account has been suspended. Please contact support for assistance.');
+        }
+
+        // Check if email is verified
+        if (!shop.isVerified) {
+            throw new Error('Please verify your email before logging in. Check your inbox for a verification link or request a new one.');
+        }
+
+        // Check if shop is approved
+        if (!shop.isApproved) {
+            throw new Error('Your shop is pending approval from our admin team. You will be notified via email once approved.');
         }
 
         const payload = {
