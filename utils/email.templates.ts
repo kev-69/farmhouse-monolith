@@ -125,6 +125,130 @@ export const templates: EmailTemplates = {
       </div>
     `
   }),
+
+  shopRejected: (data) => ({
+    subject: 'Shop Registration - Application Not Approved',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+        <div style="text-align: center; padding: 10px;">
+          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
+        </div>
+        <div style="padding: 20px;">
+          <h2 style="color: #d32f2f; margin-bottom: 20px;">Shop Registration Not Approved</h2>
+          <p>Hello ${data.ownerName},</p>
+          <p>Thank you for your interest in becoming a seller on FarmGhana.</p>
+          <p>After careful review of your shop application for "${data.shopName}", we regret to inform you that your application has not been approved at this time.</p>
+          
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Reason for rejection:</strong> ${data.rejectionReason}</p>
+          </div>
+          
+          <p>You may address the issues mentioned above and submit a new application. We encourage you to:</p>
+          <ul>
+            <li>Review our seller guidelines</li>
+            <li>Provide more complete documentation</li>
+            <li>Ensure all information meets our marketplace standards</li>
+          </ul>
+          
+          <p>If you have questions or need further clarification, please contact our seller support team.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.supportLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Contact Seller Support</a>
+          </div>
+          
+          <p>Thank you for your understanding.</p>
+          <p>Best regards,<br>The FarmGhana Team</p>
+        </div>
+        <div style="text-align: center; padding: 15px; background-color: #f5f5f5; color: #666; font-size: 12px; border-top: 1px solid #eaeaea;">
+          <p>&copy; ${new Date().getFullYear()} FarmGhana. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  }),
+
+  shopBanned: (data) => ({
+    subject: `Your Shop "${data.shopName}" Has Been Suspended`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+        <div style="text-align: center; padding: 10px;">
+          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
+        </div>
+        <div style="padding: 20px;">
+          <h2 style="color: #d32f2f; margin-bottom: 20px;">Your Shop Has Been Suspended</h2>
+          <p>Hello ${data.ownerName},</p>
+          <p>We regret to inform you that your shop "${data.shopName}" has been suspended from the FarmGhana platform.</p>
+          
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Reason for suspension:</strong> ${data.banReason}</p>
+            <p style="margin: 5px 0;"><strong>Suspension Date:</strong> ${new Date(data.banDate).toLocaleDateString()}</p>
+          </div>
+          
+          <p>This action has been taken because your shop was found to be in violation of our seller guidelines. During this suspension period:</p>
+          <ul>
+            <li>Your shop and products will not be visible on the marketplace</li>
+            <li>You cannot process or fulfill pending orders</li>
+            <li>You cannot access seller features on the platform</li>
+          </ul>
+          
+          <p>${data.isPermanent ? 
+            'This suspension is <strong>permanent</strong> and your shop will not be reinstated.' : 
+            'This suspension will be in effect until the issues are resolved. You may appeal this decision by contacting our support team.'}
+          </p>
+          
+          ${!data.isPermanent ? `
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.appealLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Appeal Suspension</a>
+          </div>
+          ` : ''}
+          
+          <p>For more information about our policies and guidelines, please review our <a href="${data.policiesLink}" style="color: #1e8e3e;">Seller Guidelines</a>.</p>
+          <p>Best regards,<br>The FarmGhana Team</p>
+        </div>
+        <div style="text-align: center; padding: 15px; background-color: #f5f5f5; color: #666; font-size: 12px; border-top: 1px solid #eaeaea;">
+          <p>&copy; ${new Date().getFullYear()} FarmGhana. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  }),
+
+  shopUnbanned: (data) => ({
+    subject: `Your Shop "${data.shopName}" Has Been Reinstated`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+        <div style="text-align: center; padding: 10px;">
+          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
+        </div>
+        <div style="padding: 20px;">
+          <h2 style="color: #1e8e3e; margin-bottom: 20px;">Your Shop Has Been Reinstated</h2>
+          <p>Hello ${data.ownerName},</p>
+          <p>We're pleased to inform you that your shop "${data.shopName}" has been reinstated on the FarmGhana platform.</p>
+          
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Reinstatement Date:</strong> ${new Date(data.reinstatementDate).toLocaleDateString()}</p>
+          </div>
+          
+          <p>Your shop is now active again, which means:</p>
+          <ul>
+            <li>Your shop and products are now visible on the marketplace</li>
+            <li>You can process and fulfill orders</li>
+            <li>You have full access to all seller features</li>
+          </ul>
+          
+          <p>We appreciate your cooperation in resolving the previous issues. To ensure continued compliance with our policies, please review our updated seller guidelines.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.dashboardLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Access Seller Dashboard</a>
+          </div>
+          
+          <p>If you have any questions or need assistance with your shop, please don't hesitate to contact our seller support team.</p>
+          <p>Best regards,<br>The FarmGhana Team</p>
+        </div>
+        <div style="text-align: center; padding: 15px; background-color: #f5f5f5; color: #666; font-size: 12px; border-top: 1px solid #eaeaea;">
+          <p>&copy; ${new Date().getFullYear()} FarmGhana. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  }),
   
   orderConfirmation: (data) => ({
     subject: `Order Confirmation - FarmGhana Order #${data.orderNumber}`,
