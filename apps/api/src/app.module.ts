@@ -1,5 +1,6 @@
 // Root module to combine all modules (users, auth, etc.)
 import { Router } from 'express';
+import { adminModule } from '../../../modules/admin/admin.module';
 import { userModule } from '../../../modules/users/user.module';
 import { authModule } from '../../../modules/auth/user.auth.module';
 import { productModule } from '../../../modules/products/product.module';
@@ -14,6 +15,7 @@ import { wishlistModule } from '../../../modules/wishlist/wishlist.module';
 const appRouter = Router();
 
 // Combine all modules
+appRouter.use('/admin', adminModule);
 appRouter.use('/users', userModule);
 appRouter.use('/auth', authModule);
 appRouter.use('/auth/shops', shopAuthModule)
