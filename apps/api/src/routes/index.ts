@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { adminModule } from '../../../../modules/admin/admin.module';
 import { authModule } from '../../../../modules/auth/user.auth.module';
 import { userModule } from '../../../../modules/users/user.module';
 import { shopAuthModule } from '../../../../modules/auth/shop.auth.module';
@@ -13,6 +14,7 @@ import { wishlistModule } from '../../../../modules/wishlist/wishlist.module';
 const router = Router();
 
 // Register all route modules
+router.use('/admin', adminModule);
 router.use('/auth', authModule);
 router.use('/users', userModule);
 router.use('/auth/shops', shopAuthModule);
