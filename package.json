@@ -19,7 +19,9 @@
     "build": "tsc",
     "start": "ts-node apps/api/src/main.ts",
     "start:dev": "ts-node-dev --respawn --transpile-only apps/api/src/main.ts",
-    "migrate": "npx prisma migrate dev"
+    "migrate": "npx prisma migrate dev",
+    "add-admin": "ts-node scripts/add-admin.ts",
+    "seed": "ts-node scripts/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",
