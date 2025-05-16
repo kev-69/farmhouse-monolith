@@ -39,7 +39,7 @@ router.post('/login',
     authController.login
 )
 
-router.get('/verify-shop-email/:token',
+router.get('/verify-email/:token',
     authController.verifyEmail
 )
 
