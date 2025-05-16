@@ -20,10 +20,10 @@ export const AdminController = {
         }
     },
 
-    getAllShops: async (req: Request, res: Response) => {
+    getUnapprovedShops: async (req: Request, res: Response) => {
         try {
-            const shops = AdminService.getAllShops()
-            res.status(200).json(successResponse("Shops fetched successfully", shops))
+            const shops = await AdminService.getUnapprovedShops()
+            res.status(200).json(successResponse("Unapproved shops fetched successfully", shops))
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -33,6 +33,68 @@ export const AdminController = {
                 res.status(400).json({ message: 'An unknown error occurred' });
             }
         }
-        
     },
+
+    approveShop: async (req: Request, res: Response) => {
+        try {
+            const { shopId } = req.params
+            const shop = await AdminService.approveShop(shopId)
+            res.status(200).json(successResponse("Shop approved successfully", shop))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    getAllUsers: async (req: Request, res: Response) => {
+        try {
+            const users = await AdminService.getAllUsers()
+            res.status(200).json(successResponse("All users fetched successfully", users))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    banShop: async (req: Request, res: Response) => {
+        try {
+            const { shopId } = req.params
+            const shop = await AdminService.banShop(shopId)
+            res.status(200).json(successResponse("Shop banned successfully", shop))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    unbanShop: async (req: Request, res: Response) => {
+        try {
+            const { shopId } = req.params
+            const shop = await AdminService.unbanShop(shopId)
+            res.status(200).json(successResponse("Shop unbanned successfully", shop))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    }
 }
