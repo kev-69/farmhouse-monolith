@@ -35,21 +35,6 @@ export const shopController = {
         
     },
 
-    deleteShop: async (req: Request, res: Response) => {
-        try {
-            await shopService.deleteShop(req.user.shopId)
-            res.status(200).json(successResponse('Shop profile deleted successfully'))
-        } catch (error) {
-            if (error instanceof AppError) {
-                res.status(error.statusCode).json(errorResponse(error.message));
-            } else if (error instanceof Error) {
-                res.status(400).json(errorResponse(error.message));
-            } else {
-                res.status(400).json({ message: 'An unknown error occurred' });
-            }
-        }
-    },
-
     getAllShops: async (req: Request, res: Response) => {
         try {
             const shops = await shopService.getAllShops()
@@ -94,5 +79,4 @@ export const shopController = {
             }
         }
     },
-
 }
