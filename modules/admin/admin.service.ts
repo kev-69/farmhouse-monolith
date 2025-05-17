@@ -6,7 +6,7 @@ import emailService from '../../utils/send.email';
 export const AdminService = {
     // login
     async loginAdmin (email: string, password: string) {
-        const admin = await prisma.user.findUnique({ where: { email } });
+        const admin = await prisma.admin.findUnique({ where: { email } });
         if (!admin) {
             throw new Error('Invalid credentials');
         }
@@ -27,8 +27,23 @@ export const AdminService = {
         return jwt.sign(
             payload, 
             process.env.JWT_SECRET as jwt.Secret, 
-            { expiresIn: '1h' }
+            { expiresIn: '24h' }
         );
+    },
+
+    async getAllShops() {
+        const shops = await prisma.shop.findMany();
+        return shops;
+    },
+
+    async getShopById(shopId: string) {
+        const shop = await prisma.shop.findUnique({
+            where: { id: shopId },
+        });
+        if (!shop) {
+            throw new Error('Shop not found');
+        }
+        return shop;
     },
 
     async getUnapprovedShops() {
