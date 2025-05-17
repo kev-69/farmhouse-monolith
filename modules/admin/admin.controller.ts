@@ -8,7 +8,38 @@ export const AdminController = {
         try {
             const { email, password } = req.body
             const token = await AdminService.loginAdmin(email, password)
-            res.status(200).json(successResponse("Admin login successful", token))
+            res.status(200).json(successResponse("Admin login successful", { token }))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    getAllShops: async (req: Request, res: Response) => {
+        try {
+            const shops = await AdminService.getAllShops()
+            res.status(200).json(successResponse("All shops fetched successfully", shops))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    getShop: async (req: Request, res: Response) => {
+        try {
+            const { shopId } = req.params
+            const shop = await AdminService.getShopById(shopId)
+            res.status(200).json(successResponse("Shop fetched successfully", shop))
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -40,6 +71,22 @@ export const AdminController = {
             const { shopId } = req.params
             const shop = await AdminService.approveShop(shopId)
             res.status(200).json(successResponse("Shop approved successfully", shop))
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    },
+
+    rejectShop: async (req: Request, res: Response) => {
+        try {
+            const { shopId } = req.params
+            const shop = await AdminService.rejectShop(shopId)
+            res.status(200).json(successResponse("Shop rejected successfully", shop))
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
