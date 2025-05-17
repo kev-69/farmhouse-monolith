@@ -18,13 +18,13 @@ router.get('/:id',
     orderController.getOrder
 );
 
-router.put('/update/:id', 
+router.put('/:orderId', 
     validateToken, 
     validate({ body: updateOrderSchema }), 
     orderController.updateOrder
 );
 
-router.delete('/delete/:id', 
+router.delete('/:orderId', 
     validateToken, 
     orderController.deleteOrder
 );
