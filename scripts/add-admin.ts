@@ -14,14 +14,11 @@ async function createAdminUser() {
     const adminDetails = {
       email: 'admin@farmghana.com',
       password: 'Admin@123456', // This will be hashed before storage
-      firstName: 'Admin',
-      lastName: 'User',
-      role: 'ADMIN',
-      isVerified: true
+      role: 'ADMIN', // Assuming you have a role field in your admin model
     };
 
     // Check if the admin already exists
-    const existingAdmin = await prisma.user.findUnique({
+    const existingAdmin = await prisma.admin.findUnique({
       where: { email: adminDetails.email }
     });
 
@@ -35,23 +32,16 @@ async function createAdminUser() {
     const hashedPassword = await bcrypt.hash(adminDetails.password, saltRounds);
 
     // Create the admin user
-    const newAdmin = await prisma.user.create({
+    const newAdmin = await prisma.admin.create({
       data: {
         email: adminDetails.email,
         password: hashedPassword,
-        firstName: adminDetails.firstName,
-        lastName: adminDetails.lastName,
-        role: adminDetails.role,
-        isVerified: adminDetails.isVerified
       }
     });
 
     console.log('Admin user created successfully:', {
       id: newAdmin.id,
       email: newAdmin.email,
-      firstName: newAdmin.firstName,
-      lastName: newAdmin.lastName,
-      role: newAdmin.role
     });
   } catch (error) {
     console.error('Error creating admin user:', error);
