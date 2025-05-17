@@ -17,7 +17,7 @@ const router = Router();
 router.use('/admin', adminModule);
 router.use('/auth', authModule);
 router.use('/users', userModule);
-router.use('/auth/shops', shopAuthModule);
+router.use('/shop/auth', shopAuthModule);
 router.use('/shops', shopModule);
 router.use('/products', productModule);
 router.use('/categories', categoryModule);
