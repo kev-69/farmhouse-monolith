@@ -28,9 +28,16 @@ router.get("/users",
 
 // get all shops
 router.get("/shops",
-    // authMiddlewares.isAdmin,
-    // validate({ query: getShopsSchema }),
-    shopController.getAllShops
+    validateToken,
+    isAdmin,
+    AdminController.getAllShops
+);
+
+// get shop details
+router.get("/shops/:shopId",
+    validateToken,
+    isAdmin,
+    AdminController.getShop
 );
 
 // get unapproved shops
@@ -41,21 +48,28 @@ router.get("/unapproved-shops",
 );
 
 // approve a shop
-router.post("/approve-shop/:shopId",
+router.post("/shops/:shopId/approve",
     validateToken,
     isAdmin,
     AdminController.approveShop
 );
 
+// reject a shop
+router.post("/shops/:shopId/reject",
+    validateToken,
+    isAdmin,
+    AdminController.rejectShop
+);
+
 // ban a shop
-router.post("/ban-shop/:shopId",
+router.post("/shops/:shopId/ban",
     validateToken,
     isAdmin,
     AdminController.banShop
 );
 
 // unban a shop
-router.post("/unban-shop/:shopId",
+router.post("/shops/:shopId/unban",
     validateToken,
     isAdmin,
     AdminController.unbanShop
