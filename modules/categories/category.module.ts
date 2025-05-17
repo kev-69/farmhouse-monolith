@@ -12,7 +12,7 @@ import { validateToken, verifyShop, verifyCategoryOwnership } from '../../middle
 const router = Router();
 
 // Define routes
-router.post('/add', 
+router.post('/', 
     validateToken, 
     verifyShop, 
     validate({ body: createCategorySchema }),
@@ -27,14 +27,15 @@ router.get('/:id',
     categoryController.getCategory
 );
 
-router.put('/update/:id', 
+router.put('/:categoryId', 
     validateToken, 
     verifyShop,
     verifyCategoryOwnership, 
     validate({ body: updateCategorySchema }),
     categoryController.updateCategory
 );
-router.delete('/delete/:id', 
+
+router.delete('/:categoryId', 
     validateToken, 
     verifyShop,
     verifyCategoryOwnership,
