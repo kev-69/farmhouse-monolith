@@ -22,7 +22,8 @@ export const validateToken = (req: Request, res: Response, next: NextFunction): 
 };
 
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (req.user?.role !== 'ADMIN') {
+  if (req.user.role !== 'ADMIN' || req.user?.type !== 'ADMIN') {
+    console.error('Unauthorized access attempt:', req.user);
     throw new AppError('Unauthorized: Admin access required', 403);
   }
   next();
