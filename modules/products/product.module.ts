@@ -12,7 +12,7 @@ import { upload } from '../../middlewares/upload';
 const router = Router();
 
 // Define routes
-router.post('/add', 
+router.post('/', 
     validateToken, 
     verifyShop,
     upload.array('productImages', 10),
@@ -24,11 +24,11 @@ router.get('/',
     productController.getAllProducts
 );
 
-router.get('/:id', 
+router.get('/:productId', 
     productController.getProduct
 );
 
-router.put('/update/:id', 
+router.put('/:productId', 
     validateToken,
     verifyShop,
     verifyProductOwnership, // Verify ownership of the product
@@ -36,7 +36,8 @@ router.put('/update/:id',
     validate({ body: updateProductSchema }), // Validate product data
     productController.updateProduct
 );
-router.delete('/delete/:id',
+
+router.delete('/:productId',
     validateToken,
     verifyShop,
     verifyProductOwnership, // Verify ownership of the product 
