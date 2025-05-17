@@ -18,7 +18,7 @@ const appRouter = Router();
 appRouter.use('/admin', adminModule);
 appRouter.use('/users', userModule);
 appRouter.use('/auth', authModule);
-appRouter.use('/auth/shops', shopAuthModule)
+appRouter.use('/shop/auth', shopAuthModule)
 appRouter.use('/shops', shopModule)
 appRouter.use('/products', productModule);
 appRouter.use('/categories', categoryModule);
