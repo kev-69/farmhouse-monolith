@@ -16,7 +16,7 @@ router.post('/',
     validateToken, 
     verifyShop,
     upload.array('productImages', 10),
-    validate({ body: createProductSchema }),
+    // validate({ body: createProductSchema }),
     productController.createProduct
 );
 
