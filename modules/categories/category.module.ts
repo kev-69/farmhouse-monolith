@@ -27,7 +27,7 @@ router.get('/:id',
     categoryController.getCategory
 );
 
-router.put('/:categoryId', 
+router.patch('/:categoryId', 
     validateToken, 
     verifyShop,
     verifyCategoryOwnership, 
