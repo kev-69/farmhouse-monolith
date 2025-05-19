@@ -60,7 +60,7 @@ export const categoryController = {
 
     getCategory: async (req: Request, res: Response) => {
         try {
-            const category = await categoryService.getCategory(req.params.id);
+            const category = await categoryService.getCategory(req.params.categoryId);
 
             res.status(200).json(successResponse('Category retrieved successfully', category));
         } catch (error) {
@@ -76,10 +76,17 @@ export const categoryController = {
 
     updateCategory: async (req: AuthRequest, res: Response) => {
         try {
+            // Ensure shopId is available
+            if (!req.user?.shopId) {
+                res.status(401).json(errorResponse('Unauthorized - Shop ID not found'));
+                return
+            }
+
+            
             const category = await categoryService.updateCategory(
-                req.params.id, 
-                req.body, 
-                req.user?.shopId || ''
+                req.params.categoryId, 
+                req.body,
+                req.user.shopId
             );
 
             res.status(200).json(successResponse('Category updated successfully', category));
@@ -96,12 +103,18 @@ export const categoryController = {
 
     deleteCategory: async (req: AuthRequest, res: Response) => {
         try {
+            // Ensure shopId is available
+            if (!req.user?.shopId) {
+                res.status(401).json(errorResponse('Unauthorized - Shop ID not found'));
+                return
+            }
+            
             await categoryService.deleteCategory(
-                req.params.id, 
+                req.params.categoryId, 
                 req.user?.shopId || ''
             );
 
-            res.status(204).json(successResponse('Category deleted successfully'));
+            res.status(204).send();
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
