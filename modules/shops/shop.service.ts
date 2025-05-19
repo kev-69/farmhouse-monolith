@@ -30,7 +30,13 @@ export const shopService = {
     },
 
     getShopProducts: async (shopId: string) => {
-        const products = await prisma.product.findMany({ where: { shopId } })
+        const products = await prisma.product.findMany({ 
+            where: { shopId },
+            include: {
+                shop: true,
+                category: true,
+            } 
+        })
         return products;
     },
 
