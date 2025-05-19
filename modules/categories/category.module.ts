@@ -23,7 +23,7 @@ router.get('/',
     categoryController.getAllCategories
 );
 
-router.get('/:id', 
+router.get('/:categoryId', 
     categoryController.getCategory
 );
 
