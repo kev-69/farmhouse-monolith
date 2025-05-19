@@ -109,7 +109,7 @@ export const templates: EmailTemplates = {
           <p>Great news! Your shop "${data.shopName}" has been reviewed and approved by our team.</p>
           <p>You can now access your seller dashboard and start listing products for sale.</p>
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.dashboardLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Access Seller Dashboard</a>
+            <a href="{http://localhost:5173}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Access Seller Dashboard</a>
           </div>
           <p><strong>Login Information:</strong></p>
           <ul>
