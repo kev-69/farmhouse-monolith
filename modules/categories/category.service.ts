@@ -15,12 +15,23 @@ export const categoryService = {
     },
 
     getAllCategories: async () => {
-        return await prisma.category.findMany();
+        return await prisma.category.findMany({
+            include: {
+                shop: true,
+                products: true,
+            },
+        });
     },
 
     getCategory: async (id: string) => {
         // Any shop can view any category
-        const category = await prisma.category.findUnique({ where: { id } });
+        const category = await prisma.category.findUnique({ 
+            where: { id },
+            include: {
+                // products: true,
+                shop: true,
+            } 
+        });
         if (!category) {
             throw new Error('Category not found');
         }
