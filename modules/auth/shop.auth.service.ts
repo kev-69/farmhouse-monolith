@@ -6,10 +6,10 @@ import emailService from '../../utils/send.email'
 export const authService = {
     signup: async (data: any) => {
         const existingShopByName = await prisma.shop.findUnique({ where: { name: data.name } })
-        const existingShopByEmail = await prisma.shop.findUnique({ where: { email: data.email } })
-        const existingShop = existingShopByName || existingShopByEmail
+        // const existingShopByEmail = await prisma.shop.findUnique({ where: { email: data.email } })
+        // const existingShop = existingShopByName || existingShopByEmail
 
-        if(existingShop) {
+        if(existingShopByName) {
             throw new Error('A shop already exist with this name or email')
         }
 
