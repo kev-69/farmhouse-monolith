@@ -13,17 +13,17 @@ router.get('/profile',
     userController.getUser
 );
 
-router.put('/update', 
+router.put('/profile', 
     validateToken, 
     userController.updateUser
 );
 
-router.delete('/delete', 
+router.delete('/profile', 
     validateToken, 
     userController.deleteUser
 );
 
-router.post('/profile/address/add', 
+router.post('/profile/address', 
     validateToken, 
     userController.addAddress
 );
