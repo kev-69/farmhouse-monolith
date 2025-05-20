@@ -13,7 +13,7 @@ router.get('/',
     orderController.getAllOrders
 );
 
-router.get('/:id', 
+router.get('/:orderId', 
     validateToken, 
     orderController.getOrder
 );
