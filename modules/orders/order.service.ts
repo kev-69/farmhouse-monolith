@@ -59,7 +59,14 @@ export const orderService = {
                         product: true
                     }
                 },
-                payments: true
+                payments: true,
+                user: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                    }
+                },
             }
         });
     },
