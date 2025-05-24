@@ -10,7 +10,14 @@ export const orderService = {
                         product: true
                     }
                 },
-                payments: true
+                payments: true,
+                // shop: {
+                //     select: {
+                //         id: true,
+                //         name: true,
+                //         logo: true,
+                //     }
+                // },
             }
         });
     },
@@ -33,7 +40,15 @@ export const orderService = {
                         product: true
                     }
                 },
-                payments: true
+                payments: true,
+                user: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true
+                    }
+                },
             }
         });
     },
