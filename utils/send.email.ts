@@ -485,13 +485,16 @@ export const emailService = {
   sendOrderConfirmationEmail: async (email: string, order: any): Promise<boolean> => {
     try {
       const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
-      
+
+      // Use shipping address from the order or fall back to user's address
+      const shippingAddress = order.shippingAddress || {};
+    
       // Format order data for email template
       const emailData = {
-        name: order.user.firstName + ' ' + order.user.lastName,
+        name: `${order.user?.firstName} ${order.user?.lastName}`,
         orderNumber: order.id.substring(0, 8).toUpperCase(),
         date: order.createdAt,
-        paymentMethod: order.paymentMethod,
+        // paymentMethod: order.paymentMethod,
         items: order.orderItems.map((item: any) => ({
           name: item.product.name,
           quantity: item.quantity,
@@ -500,7 +503,18 @@ export const emailService = {
         subtotal: order.totalAmount,
         platformFee: order.totalAmount * 0.05, // 5% platform fee
         total: order.totalAmount * 1.05, // Total with platform fee
-        shipping: order.shippingAddress,
+        // shipping: order.shippingAddress,
+
+        // Use shipping address or fallback values
+      shipping: {
+        fullName: shippingAddress.fullName || (order.user ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() : 'Customer'),
+        street: shippingAddress.street || (order.user?.address?.street || ''),
+        city: shippingAddress.city || (order.user?.address?.city || ''),
+        state: shippingAddress.state || (order.user?.address?.state || ''),
+        zipCode: shippingAddress.zipCode || (order.user?.address?.zipCode || ''),
+        country: shippingAddress.country || (order.user?.address?.country || ''),
+        phone: shippingAddress.phone || (order.user?.address?.phone || '')
+      },
         orderLink
       };
       
