@@ -78,7 +78,12 @@ export const AdminService = {
         });
 
         // send rejected email
-        // await emailServices ...
+        await emailService.sendShopRejectionEmail(
+            shop.email,
+            shop.id,
+            shop.name,
+            shop.ownerName
+        );
         return shop;
     },
 
