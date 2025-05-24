@@ -3,6 +3,8 @@ import { cartService } from './cart.service';
 import { AppError } from "../../utils/errors";
 import { successResponse, errorResponse } from "../../utils/response";
 import { prisma } from '../../shared/prisma';
+import emailService from '../../utils/send.email';
+import { orderService } from '../orders/order.service';
 
 // Extend Request to include user
 interface AuthRequest extends Request {
@@ -177,10 +179,8 @@ export const cartController = {
       const userId = req.user.userId;
       const sessionId = req.cookies?.cartSessionId as string;
       
-      // Get cart
-      const { cart } = await cartService.getOrCreateCart(userId, sessionId);
-      
       // Get cart with items
+      const { cart } = await cartService.getOrCreateCart(userId, sessionId);
       const cartData = await cartService.getCart(cart.id);
       
       if (cartData.items.length === 0) {
@@ -188,7 +188,7 @@ export const cartController = {
         return;
       }
       
-      const { paymentMethod } = req.body;
+      const { paymentMethod, shippingAddress } = req.body;
       
       // Begin transaction for checkout process
       const order = await prisma.$transaction(async (prismaClient) => {
@@ -247,6 +247,19 @@ export const cartController = {
       // Clear session cookie
       if (sessionId) {
         res.clearCookie('cartSessionId');
+      }
+
+      const completeOrder = await orderService.getOrder(order.id);
+
+      // Then get user email
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true }
+      });
+
+      if (user && user.email) {
+        // Now send the email with complete order data
+        await emailService.sendOrderConfirmationEmail(user.email, completeOrder);
       }
       
       res.status(201).json(successResponse('Order placed successfully', {
