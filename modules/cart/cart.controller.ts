@@ -5,6 +5,7 @@ import { successResponse, errorResponse } from "../../utils/response";
 import { prisma } from '../../shared/prisma';
 import emailService from '../../utils/send.email';
 import { orderService } from '../orders/order.service';
+import logger from '../../utils/logger';
 
 // Extend Request to include user
 interface AuthRequest extends Request {
@@ -170,6 +171,8 @@ export const cartController = {
 
   checkout: async (req: AuthRequest, res: Response) => {
     try {
+      // console.log("Checkout request body:", req.body);
+      logger.info("Checkout request body:", req.body);
       // Check if user is authenticated
       if (!req.user?.userId) {
         res.status(401).json(errorResponse('Authentication required for checkout'));
@@ -188,16 +191,28 @@ export const cartController = {
         return;
       }
       
-      const { paymentMethod, shippingAddress } = req.body;
+      const { paymentMethod } = req.body;
       
       // Begin transaction for checkout process
       const order = await prisma.$transaction(async (prismaClient) => {
+        // Format shipping address for storage
+        const formattedShippingAddress = {
+          fullName: req.body.shippingAddress.fullName,
+          street: req.body.shippingAddress.street,
+          city: req.body.shippingAddress.city,
+          state: req.body.shippingAddress.state,
+          zipCode: req.body.shippingAddress.zipCode || '',
+          country: req.body.shippingAddress.country || 'Ghana',
+          phone: req.body.shippingAddress.phone
+        };
+
         // Create the order
         const newOrder = await prismaClient.order.create({
           data: {
             userId,
             totalAmount: cartData.totalAmount,
             orderStatus: 'PROCESSING',
+            shippingAddress: formattedShippingAddress,
             orderItems: {
                 create: cartData.items.map((item: CartItem) => ({
                     productId: item.productId.toString(),
@@ -261,13 +276,25 @@ export const cartController = {
         // Now send the email with complete order data
         await emailService.sendOrderConfirmationEmail(user.email, completeOrder);
       }
+
+      console.log("Order being returned:", {
+        id: order.id,
+        totalAmount: order.totalAmount,
+        shippingAddress: order.shippingAddress
+      });
       
       res.status(201).json(successResponse('Order placed successfully', {
         order: {
           id: order.id,
           totalAmount: order.totalAmount,
           orderStatus: order.orderStatus,
-          orderItems: order.orderItems
+          orderItems: order.orderItems.map(item => ({
+            id: item.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          shippingAddress: order.shippingAddress,
         }
       }));
     } catch (error) {
