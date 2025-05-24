@@ -48,7 +48,7 @@ export const orderController = {
 
     getOrder: async (req: AuthRequest, res: Response) => {
         try {
-            const orderId = req.params.id;
+            const orderId = req.params.orderId;
             
             // Get the order
             const order = await orderService.getOrder(orderId);
