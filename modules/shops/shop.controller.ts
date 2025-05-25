@@ -21,7 +21,7 @@ export const shopController = {
 
     updateShop: async (req: Request, res: Response) => {
         try {
-            const shop = await shopService.updateShop(req.user.shopId, req.body)
+            const shop = await shopService.updateShop(req.user.shopId, req.body, req.file);
             res.status(200).json(successResponse('Shop profile updated successfully', shop))
         } catch (error) {
             if (error instanceof AppError) {
@@ -52,7 +52,8 @@ export const shopController = {
 
     getShopProducts: async (req: Request, res: Response) => {
         try {
-            const products = await shopService.getShopProducts(req.params.shopId)
+            const shopId = req.params.shopId;
+            const products = await shopService.getShopProducts(shopId)
             res.status(200).json(successResponse('Shop products retrieved successfully',products))
         } catch (error) {
             if (error instanceof AppError) {
@@ -67,7 +68,8 @@ export const shopController = {
 
     getShopById: async (req: Request, res: Response) => {
         try {
-            const shop = await shopService.getShopById(req.params.shopId)
+            const shopId = req.params.shopId;
+            const shop = await shopService.getShopById(shopId)
             res.status(200).json(successResponse('Shop retrieved successfully', shop))
         } catch (error) {
             if (error instanceof AppError) {
