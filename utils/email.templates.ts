@@ -377,7 +377,49 @@ export const templates: EmailTemplates = {
         </div>
       </div>
     `
-  })
-};
+  }),
+
+  orderDelivered: (data) => ({
+    subject: `Your Order Has Been Delivered - FarmGhana Order #${data.orderNumber}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+        <div style="text-align: center; padding: 10px;">
+          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
+        </div>
+        <div style="padding: 20px;">
+          <h2 style="color: #1e8e3e; margin-bottom: 20px;">Your Order Has Been Delivered!</h2>
+          <p>Hello ${data.name},</p>
+          <p>We're happy to inform you that your order has been successfully delivered.</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${data.orderNumber}</p>
+            <p style="margin: 5px 0;"><strong>Delivery Date:</strong> ${new Date(data.deliveryDate).toLocaleDateString()}</p>
+          </div>
+          
+          <h3 style="color: #1e8e3e;">Order Summary</h3>
+          <div style="margin-bottom: 20px;">
+            ${data.items.map((item: any) => `
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eaeaea; padding: 10px 0;">
+                <div>${item.name} × ${item.quantity}</div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <h3 style="color: #1e8e3e;">Delivery Information</h3>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+            <p style="margin: 5px 0;"><strong>${data.shipping.fullName}</strong></p>
+            <p style="margin: 5px 0;">${data.shipping.street}</p>
+            <p style="margin: 5px 0;">${data.shipping.city}, ${data.shipping.state}</p>
+            <p style="margin: 5px 0;">${data.shipping.zipCode}, ${data.shipping.country}</p>
+            <p style="margin: 5px 0;">Phone: ${data.shipping.phone}</p>
+          </div>
+          <p>We hope you are satisfied with your purchase. If you have any questions or concerns about your order, please contact our customer support.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.orderLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Order Details</a>
+          </div>
+        </div>
+      </div>
+    `
+  }),
+}
 
 export default templates;
