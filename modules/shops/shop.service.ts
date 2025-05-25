@@ -1,4 +1,7 @@
 import { prisma } from '../../shared/prisma';
+import { uploadImage } from '../../config/cloudinary-config';
+import fs from 'fs';
+import path from 'path';
 
 export const shopService = {
     getShop: async (id: string) => {
@@ -11,8 +14,43 @@ export const shopService = {
         return shop;
     },
 
-    updateShop: async (id: string, data: any) => {
-        return await prisma.shop.update({ where: { id }, data })
+    updateShop: async (shopId: string, data: any, file?: Express.Multer.File) => {
+        // Check if shop exists
+        const shop = await prisma.shop.findUnique({ where: { id: shopId } });
+        if (!shop) {
+            throw new Error('Shop not found');
+        }
+        
+        let profileImageUrl = shop.profileImage;
+        
+        // Handle file upload if there's a profile image
+        if (file) {
+            try {
+                // Upload to your storage service (Cloudinary, S3, etc.)
+                const tempFilePath = path.join(__dirname, '../../uploads', file.filename);
+                // upload the image to Cloudinary
+                profileImageUrl = await uploadImage(tempFilePath);
+            } catch (error) {
+                console.error('Failed to upload shop logo:', error);
+                throw new Error('Failed to upload shop logo');
+            }
+        }
+        
+        // Update shop with new data
+        const updatedShop = await prisma.shop.update({
+            where: { id: shopId },
+            data: {
+            name: data.name,
+            ownerName: data.ownerName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            location: data.location,
+            description: data.description,
+            profileImage: profileImageUrl, // Set the URL from upload
+            },
+        });
+        
+        return updatedShop;
     },
 
     getAllShops: async () => {
