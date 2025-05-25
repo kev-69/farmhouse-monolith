@@ -579,7 +579,7 @@ export const emailService = {
         name: order.user.firstName + ' ' + order.user.lastName,
         orderNumber: order.id.substring(0, 8).toUpperCase(),
         cancelledDate: new Date(),
-        reason,
+        reason: order.cancellationReason,
         items: order.orderItems.map((item: any) => ({
           name: item.product.name,
           quantity: item.quantity
