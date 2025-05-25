@@ -8,6 +8,11 @@ export const createOrderSchema = z.object({
     status: z.enum(['PENDING', 'COMPLETED', 'CANCELLED']),
 });
 
-export const updateOrderSchema = z.object({
-    status: z.enum(['PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']).optional(),
+export const shipOrderSchema = z.object({
+    trackingNumber: z.string().optional(),
+    carrier: z.string().optional(),
+});
+
+export const cancelOrderSchema = z.object({
+    reason: z.string().min(1, { message: 'Cancellation reason is required' }),
 });
