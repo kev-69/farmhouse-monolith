@@ -544,7 +544,56 @@ export const emailService = {
       logger.error(`Error in sendOrderShippedEmail: ${error}`);
       return false;
     }
-  }
+  },
+
+  sendOrderDeliveredEmail: async (email: string, order: any): Promise<boolean> => {
+    try {
+      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      
+      // Format order data for email template
+      const emailData = {
+        name: order.user.firstName + ' ' + order.user.lastName,
+        orderNumber: order.id.substring(0, 8).toUpperCase(),
+        deliveredDate: new Date(),
+        items: order.orderItems.map((item: any) => ({
+          name: item.product.name,
+          quantity: item.quantity
+        })),
+        shipping: order.shippingAddress,
+        orderLink
+      };
+      
+      return await sendEmail(email, 'orderDelivered', emailData);
+    } catch (error) {
+      logger.error(`Error in sendOrderDeliveredEmail: ${error}`);
+      return false;
+    }
+  },
+
+  sendOrderCancelledEmail: async (email: string, order: any, reason: string): Promise<boolean> => {
+    try {
+      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      
+      // Format order data for email template
+      const emailData = {
+        name: order.user.firstName + ' ' + order.user.lastName,
+        orderNumber: order.id.substring(0, 8).toUpperCase(),
+        cancelledDate: new Date(),
+        reason,
+        items: order.orderItems.map((item: any) => ({
+          name: item.product.name,
+          quantity: item.quantity
+        })),
+        shipping: order.shippingAddress,
+        orderLink
+      };
+      
+      return await sendEmail(email, 'orderCancelled', emailData);
+    } catch (error) {
+      logger.error(`Error in sendOrderCancelledEmail: ${error}`);
+      return false;
+    }
+  },
 };
 
 export default emailService;
