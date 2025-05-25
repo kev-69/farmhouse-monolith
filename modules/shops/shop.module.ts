@@ -3,6 +3,7 @@ import { shopController } from './shop.controller'
 
 // middlewares
 import { validateToken, verifyShop } from '../../middlewares/shop.middleware'
+import { upload } from '../../middlewares/upload'
 
 const router = Router()
 
@@ -16,6 +17,7 @@ router.get('/profile',
 router.put('/update', 
     validateToken, 
     verifyShop,
+    upload.single('profileImage'),
     shopController.updateShop
 )
 
@@ -23,7 +25,7 @@ router.get('/',
     shopController.getAllShops
 )
 
-router.get('/:id', 
+router.get('/:shopId', 
     shopController.getShopById
 )
 
