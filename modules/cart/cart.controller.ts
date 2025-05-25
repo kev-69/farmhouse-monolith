@@ -277,11 +277,11 @@ export const cartController = {
         await emailService.sendOrderConfirmationEmail(user.email, completeOrder);
       }
 
-      console.log("Order being returned:", {
-        id: order.id,
-        totalAmount: order.totalAmount,
-        shippingAddress: order.shippingAddress
-      });
+      // console.log("Order being returned:", {
+      //   id: order.id,
+      //   totalAmount: order.totalAmount,
+      //   shippingAddress: order.shippingAddress
+      // });
       
       res.status(201).json(successResponse('Order placed successfully', {
         order: {
