@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { orderController } from './order.controller';
 import { validate } from '../../middlewares/validation.middleware';
-import { updateOrderSchema } from './order.schema';
+import { shipOrderSchema, cancelOrderSchema } from './order.schema';
 import { validateToken } from '../../middlewares/shop.middleware';
 
 const router = Router();
@@ -18,10 +18,21 @@ router.get('/:orderId',
     orderController.getOrder
 );
 
-router.put('/:orderId', 
-    validateToken, 
-    validate({ body: updateOrderSchema }), 
-    orderController.updateOrder
+router.post('/:orderId/ship', 
+    validateToken,
+    validate({ body: shipOrderSchema }),
+    orderController.shipOrder
+);
+
+router.post('/:orderId/deliver', 
+    validateToken,
+    orderController.deliverOrder
+);
+
+router.post('/:orderId/cancel', 
+    validateToken,
+    validate({ body: cancelOrderSchema }),
+    orderController.cancelOrder
 );
 
 router.delete('/:orderId', 
