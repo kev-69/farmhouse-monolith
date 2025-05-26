@@ -28,7 +28,7 @@ router.get('/:productId',
     productController.getProduct
 );
 
-router.put('/:productId', 
+router.patch('/:productId', 
     validateToken,
     verifyShop,
     verifyProductOwnership, // Verify ownership of the product
@@ -42,6 +42,13 @@ router.delete('/:productId',
     verifyShop,
     verifyProductOwnership, // Verify ownership of the product 
     productController.deleteProduct
+);
+
+router.post('/:productId/restore',
+    validateToken,
+    verifyShop,
+    verifyProductOwnership, // Verify ownership of the product
+    productController.restoreProduct
 );
 
 export const productModule = router;
