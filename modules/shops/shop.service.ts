@@ -67,14 +67,26 @@ export const shopService = {
     return shops;
     },
 
-    getShopProducts: async (shopId: string) => {
+    getShopProducts: async (shopId: string, includeDeleted = false) => {
+        console.log(`Service: Getting products for shop ${shopId} with includeDeleted=${includeDeleted}`);
+  
+        const whereClause = {
+            shopId,
+            ...(includeDeleted ? {} : { isDeleted: false })
+        };
+        
+        console.log('Where clause:', whereClause);
         const products = await prisma.product.findMany({ 
-            where: { shopId },
+            where: whereClause,
             include: {
                 shop: true,
                 category: true,
-            } 
+            },
+            orderBy: {
+                createdAt: 'desc', // Order by creation date
+            }, 
         })
+        console.log(`Found ${products.length} products`);
         return products;
     },
 
