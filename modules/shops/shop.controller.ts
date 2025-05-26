@@ -53,7 +53,9 @@ export const shopController = {
     getShopProducts: async (req: Request, res: Response) => {
         try {
             const shopId = req.params.shopId;
-            const products = await shopService.getShopProducts(shopId)
+            const includeDeleted = req.query.includeDeleted === 'true';
+            console.log(`Getting shop products with includeDeleted=${includeDeleted}`); // Debug log
+            const products = await shopService.getShopProducts(shopId, includeDeleted)
             res.status(200).json(successResponse('Shop products retrieved successfully',products))
         } catch (error) {
             if (error instanceof AppError) {
