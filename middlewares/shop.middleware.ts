@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import { successResponse, errorResponse } from "../utils/response";
+import logger from '../utils/logger';
 
 // Define interface to extend Express Request
 interface AuthRequest extends Request {
@@ -92,18 +93,31 @@ export const verifyCategoryOwnership = async (req: AuthRequest, res: Response, n
 // Middleware to verify ownership of a product
 export const verifyProductOwnership = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const productId = req.params.id;
-    const shopId = req.user.shopId; // Assuming shop ID is added to the request after authentication
+    const productId = req.params.productId;
+    const shopId = req.user?.shopId; 
 
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!shopId) {
+      res.status(401).json({ message: 'Authentication required' });
+      return
+    }
 
-    if (!product || product.shopId !== shopId) {
-      res.status(403).json({ message: 'You do not have permission to modify this product.' });
+    const product = await prisma.product.findUnique({ 
+      where: { id: productId } 
+    });
+
+    if (!product) {
+      res.status(404).json({ message: 'Product not found' });
+      return
+    }
+
+    if (product.shopId !== shopId) {
+      res.status(403).json({ message: 'You do not have permission to modify this product' });
       return
     }
 
     next();
   } catch (error) {
+    logger.error('Error in verifyProductOwnership middleware:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
