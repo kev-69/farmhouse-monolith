@@ -25,6 +25,10 @@ export const productService = {
 
     getAllProducts: async () => {
         return await prisma.product.findMany({
+            where: {
+                isDeleted: false, // Only fetch non-deleted products
+                inStock: true, // Only fetch products that are in stock
+            },
             include: {
                 shop: true,
                 category: true,
@@ -76,9 +80,9 @@ export const productService = {
         });
     },
 
-    deleteProduct: async (id: string, shopId: string) => {
+    deleteProduct: async (productId: string, shopId: string) => {
         // Only the shop that created the product can delete it
-        const product = await prisma.product.findUnique({ where: { id } });
+        const product = await prisma.product.findUnique({ where: { id: productId } });
 
         if (!product) {
             throw new Error('Product not found');
@@ -89,6 +93,40 @@ export const productService = {
             throw new Error('You don\'t have permission to delete this product');
         }
 
-        return await prisma.product.delete({ where: { id } });
+        return await prisma.product.update({ 
+            where: { id: productId } ,
+            data: {
+                isDeleted: true, // Soft delete
+                // set stock quantity to 0
+                // stockQuantity: 0,
+                inStock: false,
+            }
+        });
     },
+
+    restoreProduct: async (productId: string, shopId: string) => {
+        // Check if product exists and belongs to shop
+        const product = await prisma.product.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        if (product.shopId !== shopId) {
+            throw new Error('You don\'t have permission to restore this product');
+        }
+
+        // Restore the product
+        return await prisma.product.update({
+            where: { id: productId },
+            data: { 
+            isDeleted: false 
+            },
+            include: {
+            category: true
+            }
+        });
+    }
 };
