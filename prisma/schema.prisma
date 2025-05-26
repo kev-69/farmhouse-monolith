@@ -67,6 +67,7 @@ model Product {
   categoryId    String
   inStock       Boolean
   category      Category @relation(fields: [categoryId], references: [id])
+  isDeleted     Boolean  @default(false)
   orders        Order[]  @relation("ProductOrder")
   shopId        String
   shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
