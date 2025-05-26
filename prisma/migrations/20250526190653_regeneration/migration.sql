@@ -1,5 +1,22 @@
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED');
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'SHOP', 'USER');
+
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PROCESSING', 'COMPLETED');
+
+-- CreateEnum
+CREATE TYPE "FulfillmentStatus" AS ENUM ('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED');
+
+-- CreateTable
+CREATE TABLE "Admin" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -8,7 +25,8 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "role" TEXT NOT NULL,
+    "phone" TEXT,
+    "role" "Role" NOT NULL DEFAULT 'USER',
     "isVerified" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -40,6 +58,7 @@ CREATE TABLE "Product" (
     "stockQuantity" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,
     "inStock" BOOLEAN NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "shopId" TEXT NOT NULL,
     "productImages" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -99,6 +118,14 @@ CREATE TABLE "Order" (
     "userId" TEXT NOT NULL,
     "totalAmount" DOUBLE PRECISION NOT NULL,
     "orderStatus" "OrderStatus" NOT NULL,
+    "shippingAddress" JSONB,
+    "shippedAt" TIMESTAMP(3),
+    "shippedBy" TEXT,
+    "deliveredAt" TIMESTAMP(3),
+    "cancelledAt" TIMESTAMP(3),
+    "cancellationReason" TEXT,
+    "trackingNumber" TEXT,
+    "carrier" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -106,12 +133,31 @@ CREATE TABLE "Order" (
 );
 
 -- CreateTable
+CREATE TABLE "OrderHistory" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "status" "OrderStatus" NOT NULL,
+    "note" TEXT,
+    "createdBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "OrderHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "OrderItem" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
+    "fulfillmentStatus" "FulfillmentStatus" NOT NULL DEFAULT 'PENDING',
+    "statusUpdatedAt" TIMESTAMP(3),
+    "statusUpdatedBy" TEXT,
+    "trackingNumber" TEXT,
+    "carrierName" TEXT,
+    "notes" TEXT,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -136,14 +182,52 @@ CREATE TABLE "Shop" (
     "ownerName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "location" TEXT NOT NULL,
+    "profileImage" TEXT,
     "phoneNumber" TEXT NOT NULL,
-    "role" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'SHOP',
     "isVerified" BOOLEAN NOT NULL,
+    "isApproved" BOOLEAN NOT NULL,
+    "isBanned" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Shop_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "VerificationToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ShopVerificationToken" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ShopVerificationToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PasswordReset" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "used" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PasswordReset_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -153,6 +237,9 @@ CREATE TABLE "_ProductOrder" (
 
     CONSTRAINT "_ProductOrder_AB_pkey" PRIMARY KEY ("A","B")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -177,6 +264,15 @@ CREATE UNIQUE INDEX "Shop_name_key" ON "Shop"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Shop_email_key" ON "Shop"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ShopVerificationToken_token_key" ON "ShopVerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasswordReset_email_key" ON "PasswordReset"("email");
 
 -- CreateIndex
 CREATE INDEX "_ProductOrder_B_index" ON "_ProductOrder"("B");
@@ -212,13 +308,25 @@ ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("pr
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "OrderHistory" ADD CONSTRAINT "OrderHistory_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VerificationToken" ADD CONSTRAINT "VerificationToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ShopVerificationToken" ADD CONSTRAINT "ShopVerificationToken_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ProductOrder" ADD CONSTRAINT "_ProductOrder_A_fkey" FOREIGN KEY ("A") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
