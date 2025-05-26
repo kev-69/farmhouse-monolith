@@ -129,7 +129,7 @@ export const productController = {
                 req.user?.shopId || ''
             );
 
-            res.status(204).json(successResponse('Product deleted successfully'));
+            res.status(204).send();
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
