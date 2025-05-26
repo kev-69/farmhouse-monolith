@@ -96,7 +96,7 @@ export const productController = {
 
     updateProduct: async (req: AuthRequest, res: Response) => {
         try {
-            const { id } = req.params;
+            const productId = req.params.productId;
             const shopId = req.user?.shopId;
 
             if (!shopId) {
@@ -109,7 +109,7 @@ export const productController = {
                 (Array.isArray(req.files) ? req.files : Object.values(req.files).flat()) : 
                 undefined;
 
-            const product = await productService.updateProduct(id, req.body, shopId, fileArray);
+            const product = await productService.updateProduct(productId, req.body, shopId, fileArray);
             res.status(200).json(successResponse('Product updated successfully', product));
         } catch (error) {
             if (error instanceof AppError) {
@@ -124,12 +124,18 @@ export const productController = {
 
     deleteProduct: async (req: AuthRequest, res: Response) => {
         try {
-            await productService.deleteProduct(
-                req.params.productId, 
-                req.user?.shopId || ''
-            );
-
-            res.status(204).send();
+            const productId = req.params.productId;
+            const shopId = req.user?.shopId;
+            
+            if (!shopId) {
+                res.status(401).json(errorResponse('Authentication required'));
+                return;
+            }
+            
+            await productService.deleteProduct(productId, shopId);
+            
+            // Return a proper success response instead of a 204 no content
+            res.status(200).json(successResponse('Product deleted successfully'));
         } catch (error) {
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
@@ -140,4 +146,29 @@ export const productController = {
             }
         }
     },
+
+    restoreProduct: async (req: AuthRequest, res: Response) => {
+        try {
+            const productId = req.params.productId;
+            const shopId = req.user?.shopId;
+            
+            if (!shopId) {
+                res.status(401).json(errorResponse('Authentication required'));
+                return
+            }
+            
+            const restoredProduct = await productService.restoreProduct(productId, shopId);
+            
+            res.status(200).json(successResponse('Product restored successfully', restoredProduct));
+        } catch (error) {
+            console.error('Error restoring product:', error);
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(500).json(errorResponse('An unknown error occurred'));
+            }
+        }
+    }
 };
