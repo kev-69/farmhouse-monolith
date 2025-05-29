@@ -1,43 +1,38 @@
-// Combines order controller methods into a module
 import { Router } from 'express';
 import { orderController } from './order.controller';
 import { validate } from '../../middlewares/validation.middleware';
-import { shipOrderSchema, cancelOrderSchema } from './order.schema';
+import { createOrderSchema, updateOrderItemStatusSchema, cancelOrderItemSchema } from './order.schema';
 import { validateToken } from '../../middlewares/shop.middleware';
 
 const router = Router();
 
-// Order management routes
+// User order routes
 router.get('/', 
-    validateToken, 
-    orderController.getAllOrders
+  validateToken, 
+  orderController.getOrders
 );
 
 router.get('/:orderId', 
-    validateToken, 
-    orderController.getOrder
+  validateToken, 
+  orderController.getOrder
 );
 
-router.post('/:orderId/ship', 
-    validateToken,
-    validate({ body: shipOrderSchema }),
-    orderController.shipOrder
+// Shop order routes
+router.get('/shop/items', 
+  validateToken, 
+  orderController.getShopOrderItems
 );
 
-router.post('/:orderId/deliver', 
-    validateToken,
-    orderController.deliverOrder
+router.patch('/items/:orderItemId/status', 
+  validateToken,
+  validate({ body: updateOrderItemStatusSchema }),
+  orderController.updateOrderItemStatus
 );
 
-router.post('/:orderId/cancel', 
-    validateToken,
-    validate({ body: cancelOrderSchema }),
-    orderController.cancelOrder
-);
-
+// Admin routes
 router.delete('/:orderId', 
-    validateToken, 
-    orderController.deleteOrder
+  validateToken, 
+  orderController.deleteOrder
 );
 
 export const orderModule = router;
