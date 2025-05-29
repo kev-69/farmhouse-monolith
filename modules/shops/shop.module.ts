@@ -14,12 +14,10 @@ router.get('/profile',
     shopController.getShop
 )
 
-router.put('/update', 
-    validateToken, 
-    verifyShop,
-    upload.single('profileImage'),
-    shopController.updateShop
-)
+router.get('/stats', 
+  validateToken, 
+  shopController.getShopStats
+);
 
 router.get('/', 
     shopController.getAllShops
@@ -31,6 +29,13 @@ router.get('/:shopId',
 
 router.get('/:shopId/products', 
     shopController.getShopProducts
+)
+
+router.put('/update', 
+    validateToken, 
+    verifyShop,
+    upload.single('profileImage'),
+    shopController.updateShop
 )
 
 export const shopModule = router
