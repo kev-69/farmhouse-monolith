@@ -22,6 +22,7 @@ interface CartItem {
     quantity: number;
     product: {
       price: number;
+      shopId: string;
       // Add other product properties you need
     };
   }
@@ -214,20 +215,22 @@ export const cartController = {
             orderStatus: 'PROCESSING',
             shippingAddress: formattedShippingAddress,
             orderItems: {
-                create: cartData.items.map((item: CartItem) => ({
-                    productId: item.productId.toString(),
-                    quantity: item.quantity,
-                    price: item.product.price
-                }))
-            },
-            products: {
-                connect: cartData.items.map((item: CartItem) => ({ 
-                  id: item.productId.toString() 
-                }))
+              create: cartData.items.map((item: CartItem) => ({
+                productId: item.productId.toString(),
+                quantity: item.quantity,
+                price: item.product.price,
+                shopId: item.product.shopId, // Add the shopId field
+                fulfillmentStatus: 'PENDING' // Set initial status
+              }))
             }
           },
           include: {
-            orderItems: true
+            orderItems: {
+              include: {
+                product: true
+              }
+            },
+            user: true
           }
         });
         
