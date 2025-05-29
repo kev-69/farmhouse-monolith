@@ -184,7 +184,7 @@ export const cartService = {
                 price: true,
                 productImages: true,
                 stockQuantity: true,
-                shopId: false,
+                shopId: true,
                 shop: {
                   select: {
                     id: true,
