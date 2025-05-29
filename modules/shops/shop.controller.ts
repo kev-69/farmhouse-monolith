@@ -83,4 +83,28 @@ export const shopController = {
             }
         }
     },
+
+    getShopStats: async (req: Request, res: Response) => {
+        try {
+            const shopId = req.user.shopId;
+            
+            if (!shopId) {
+                res.status(401).json(errorResponse('Authentication required'));
+            return;
+            }
+            
+            const stats = await shopService.getShopStats(shopId);
+            
+            res.status(200).json(successResponse('Shop statistics retrieved successfully', stats));
+        } catch (error) {
+            console.error('Error retrieving shop statistics:', error);
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json(errorResponse(error.message));
+            } else if (error instanceof Error) {
+                res.status(400).json(errorResponse(error.message));
+            } else {
+                res.status(400).json({ message: 'An unknown error occurred' });
+            }
+        }
+    }
 }
