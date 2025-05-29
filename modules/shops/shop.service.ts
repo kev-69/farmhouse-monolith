@@ -94,4 +94,92 @@ export const shopService = {
         const shop = await prisma.shop.findUnique({ where: { id } })
         return shop;
     },
+
+    getShopStats: async (shopId: string) => {
+        // Verify shop exists
+        const shop = await prisma.shop.findUnique({ 
+            where: { id: shopId } 
+        });
+        
+        if (!shop) {
+            throw new Error('Shop not found');
+        }
+        
+        // Get current date at start of day
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Get current month start
+        const monthStart = new Date();
+        monthStart.setDate(1);
+        monthStart.setHours(0, 0, 0, 0);
+        
+        // Get products count
+        const productsCount = await prisma.product.count({
+            where: { 
+            shopId,
+            isDeleted: false 
+            }
+        });
+        
+        // Get total orders count (counting unique orders that contain shop's items)
+        const orderItems = await prisma.orderItem.findMany({
+            where: { shopId },
+            select: { orderId: true }
+        });
+        
+        const uniqueOrderIds = new Set(orderItems.map(item => item.orderId));
+        const totalOrdersCount = uniqueOrderIds.size;
+        
+        // Get today's orders
+        const todayOrderItems = await prisma.orderItem.findMany({
+            where: { 
+            shopId,
+            order: {
+                createdAt: {
+                gte: today
+                }
+            }
+            },
+            select: { orderId: true }
+        });
+        
+        const uniqueTodayOrderIds = new Set(todayOrderItems.map(item => item.orderId));
+        const todayOrdersCount = uniqueTodayOrderIds.size;
+        
+        // Calculate total revenue
+        const allOrderItems = await prisma.orderItem.findMany({
+            where: { shopId }
+        });
+        
+        const totalRevenue = allOrderItems.reduce(
+            (sum, item) => sum + (item.price * item.quantity), 
+            0
+        );
+        
+        // Calculate monthly revenue
+        const monthlyOrderItems = await prisma.orderItem.findMany({
+            where: { 
+            shopId,
+            order: {
+                createdAt: {
+                gte: monthStart
+                }
+            }
+            }
+        });
+        
+        const monthlyRevenue = monthlyOrderItems.reduce(
+            (sum, item) => sum + (item.price * item.quantity), 
+            0
+        );
+        
+        return {
+            productsCount,
+            totalOrdersCount,
+            todayOrdersCount,
+            totalRevenue,
+            monthlyRevenue
+        };
+    }
 }
