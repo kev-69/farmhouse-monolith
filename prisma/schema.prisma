@@ -129,9 +129,7 @@ model CartItem {
 
 enum OrderStatus {
   PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
+  COMPLETED
 }
 
 model Order {
@@ -166,14 +164,29 @@ model OrderHistory {
   order       Order     @relation(fields: [orderId], references: [id])
 }
 
+enum FulfillmentStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 model OrderItem {
   id          String   @id @default(uuid())
   orderId     String
   order       Order    @relation(fields: [orderId], references: [id])
   productId   String
   product     Product  @relation(fields: [productId], references: [id])
+  shopId      String
+  shop        Shop      @relation(fields: [shopId], references: [id])
   quantity    Int
   price       Float
+  fulfillmentStatus FulfillmentStatus  @default(PENDING)
+  statusUpdatedAt   DateTime?
+  statusUpdatedBy   String?            // Shop owner who updated the status
+  trackingNumber    String?            // Allow each shop to add their own tracking
+  carrierName       String?            // Allow each shop to specify their carrier
+  notes             String?            // Shop notes about this specific item
 }
 
 model Payment {
@@ -203,6 +216,7 @@ model Shop {
   isBanned    Boolean   @default(false)
   categories  Category[]
   products    Product[]
+  orderItems  OrderItem[]
   shopVerificationTokens  ShopVerificationToken[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
