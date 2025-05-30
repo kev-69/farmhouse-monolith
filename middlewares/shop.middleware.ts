@@ -84,7 +84,7 @@ export const verifyCategoryOwnership = async (req: AuthRequest, res: Response, n
     // If everything checks out, proceed
     next();
   } catch (error) {
-    console.error('Error in verifyCategoryOwnership middleware:', error);
+    // console.error('Error in verifyCategoryOwnership middleware:', error);
     res.status(500).json(errorResponse('Server error during ownership verification'));
     return
   }
