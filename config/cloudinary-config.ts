@@ -25,7 +25,7 @@ export const uploadImage = async (filePath: string) => {
         fs.unlinkSync(filePath); // remove the file if it exists
     }
 
-    console.error('Error uploading image to Cloudinary:', error);
+    // console.error('Error uploading image to Cloudinary:', error);
     throw new Error('Error uploading image to Cloudinary');
   }
 };
