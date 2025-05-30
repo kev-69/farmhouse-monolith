@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 const requiredEnvVars = ['JWT_SECRET', 'DB_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
-    console.error(`Error: Environment variable ${envVar} is not set`);
+    // console.error(`Error: Environment variable ${envVar} is not set`);
     process.exit(1);
   }
 }
