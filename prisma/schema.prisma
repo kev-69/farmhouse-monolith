@@ -142,13 +142,6 @@ model Order {
   products      Product[]   @relation("ProductOrder")
   orderItems    OrderItem[]
   shippingAddress Json?
-  shippedAt       DateTime?
-  shippedBy       String?       // Shop ID that shipped it
-  deliveredAt     DateTime?
-  cancelledAt     DateTime?
-  cancellationReason String?
-  trackingNumber  String?
-  carrier         String?
   history         OrderHistory[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
