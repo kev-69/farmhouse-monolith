@@ -165,7 +165,7 @@ async function main() {
         data: {
             userId: user2.id,
             totalAmount: 719.98,
-            orderStatus: 'DELIVERED',  // Using a string literal for the status
+            orderStatus: 'COMPLETED',  // Using a string literal for the status
             products: {
                 connect: [
                     { id: product1.id },
@@ -303,7 +303,7 @@ async function main() {
 
 main()
     .catch((e) => {
-        console.error(e);
+        // console.error(e);
         process.exit(1);
     })
     .finally(async () => {
