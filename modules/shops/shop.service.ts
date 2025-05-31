@@ -31,7 +31,7 @@ export const shopService = {
                 // upload the image to Cloudinary
                 profileImageUrl = await uploadImage(tempFilePath);
             } catch (error) {
-                console.error('Failed to upload shop logo:', error);
+                // console.error('Failed to upload shop logo:', error);
                 throw new Error('Failed to upload shop logo');
             }
         }
@@ -68,14 +68,14 @@ export const shopService = {
     },
 
     getShopProducts: async (shopId: string, includeDeleted = false) => {
-        console.log(`Service: Getting products for shop ${shopId} with includeDeleted=${includeDeleted}`);
+        // console.log(`Service: Getting products for shop ${shopId} with includeDeleted=${includeDeleted}`);
   
         const whereClause = {
             shopId,
             ...(includeDeleted ? {} : { isDeleted: false })
         };
         
-        console.log('Where clause:', whereClause);
+        // console.log('Where clause:', whereClause);
         const products = await prisma.product.findMany({ 
             where: whereClause,
             include: {
@@ -86,7 +86,7 @@ export const shopService = {
                 createdAt: 'desc', // Order by creation date
             }, 
         })
-        console.log(`Found ${products.length} products`);
+        // console.log(`Found ${products.length} products`);
         return products;
     },
 
