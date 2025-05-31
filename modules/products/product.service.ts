@@ -18,7 +18,7 @@ export const productService = {
             // Create product with image URLs
             return await prisma.product.create({ data: productData });
         } catch (error) {
-            console.error('Error uploading images:', error);
+            // console.error('Error uploading images:', error);
             throw new Error('Failed to upload product images');
         }
     },
