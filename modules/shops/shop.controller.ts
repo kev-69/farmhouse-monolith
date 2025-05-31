@@ -54,7 +54,7 @@ export const shopController = {
         try {
             const shopId = req.params.shopId;
             const includeDeleted = req.query.includeDeleted === 'true';
-            console.log(`Getting shop products with includeDeleted=${includeDeleted}`); // Debug log
+            // console.log(`Getting shop products with includeDeleted=${includeDeleted}`); // Debug log
             const products = await shopService.getShopProducts(shopId, includeDeleted)
             res.status(200).json(successResponse('Shop products retrieved successfully',products))
         } catch (error) {
@@ -97,7 +97,7 @@ export const shopController = {
             
             res.status(200).json(successResponse('Shop statistics retrieved successfully', stats));
         } catch (error) {
-            console.error('Error retrieving shop statistics:', error);
+            // console.error('Error retrieving shop statistics:', error);
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
             } else if (error instanceof Error) {
