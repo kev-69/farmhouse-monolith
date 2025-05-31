@@ -161,7 +161,7 @@ export const productController = {
             
             res.status(200).json(successResponse('Product restored successfully', restoredProduct));
         } catch (error) {
-            console.error('Error restoring product:', error);
+            // console.error('Error restoring product:', error);
             if (error instanceof AppError) {
                 res.status(error.statusCode).json(errorResponse(error.message));
             } else if (error instanceof Error) {
