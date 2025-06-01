@@ -139,10 +139,6 @@ export const templates: EmailTemplates = {
           <p>Thank you for your interest in becoming a seller on FarmGhana.</p>
           <p>After careful review of your shop application for "${data.shopName}", we regret to inform you that your application has not been approved at this time.</p>
           
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Reason for rejection:</strong> ${data.rejectionReason}</p>
-          </div>
-          
           <p>You may address the issues mentioned above and submit a new application. We encourage you to:</p>
           <ul>
             <li>Review our seller guidelines</li>
@@ -190,16 +186,9 @@ export const templates: EmailTemplates = {
             <li>You cannot access seller features on the platform</li>
           </ul>
           
-          <p>${data.isPermanent ? 
-            'This suspension is <strong>permanent</strong> and your shop will not be reinstated.' : 
-            'This suspension will be in effect until the issues are resolved. You may appeal this decision by contacting our support team.'}
-          </p>
-          
-          ${!data.isPermanent ? `
           <div style="text-align: center; margin: 30px 0;">
             <a href="${data.appealLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Appeal Suspension</a>
           </div>
-          ` : ''}
           
           <p>For more information about our policies and guidelines, please review our <a href="${data.policiesLink}" style="color: #1e8e3e;">Seller Guidelines</a>.</p>
           <p>Best regards,<br>The FarmGhana Team</p>
@@ -379,7 +368,7 @@ export const templates: EmailTemplates = {
     `
   }),
 
-  orderDelivered: (data) => ({
+  orderCompleted: (data) => ({
     subject: `Your Order Has Been Delivered - FarmGhana Order #${data.orderNumber}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
