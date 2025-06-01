@@ -185,12 +185,6 @@ export const orderService = {
       
       const allCompleted = allOrderItems.every(
         item => item.fulfillmentStatus === 'DELIVERED' || item.fulfillmentStatus === 'CANCELLED',
-
-        // send order completed notification to user
-        await emailService.sendOrderCompletedEmail(
-          updated.order.user.email,
-          updated.order
-        )
       );
       
       // If all items are completed, update the order status to COMPLETED
@@ -199,6 +193,12 @@ export const orderService = {
           where: { id: orderItem.orderId },
           data: { orderStatus: 'COMPLETED' }
         });
+
+        // send order completed notification to user
+        await emailService.sendOrderCompletedEmail(
+          updated.order.user.email,
+          updated.order
+        )
       }
       
       return updated;
