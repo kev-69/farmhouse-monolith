@@ -546,38 +546,6 @@ export const emailService = {
       return false;
     }
   },
-  
-  /**
-   * Send order shipped email
-   * @param email Customer's email
-   * @param order Order data
-   */
-  sendOrderShippedEmail: async (email: string, order: any): Promise<boolean> => {
-    try {
-      const orderLink = `${process.env.FRONTEND_URL}/dashboard`;
-      
-      // Format order data for email template
-      const emailData = {
-        name: order.user.firstName + ' ' + order.user.lastName,
-        orderNumber: order.id.substring(0, 8).toUpperCase(),
-        shippedDate: new Date(),
-        trackingNumber: order.trackingNumber,
-        carrier: order.carrier,
-        trackingLink: order.trackingLink || orderLink,
-        items: order.orderItems.map((item: any) => ({
-          name: item.product.name,
-          quantity: item.quantity
-        })),
-        shipping: order.shippingAddress,
-        orderLink
-      };
-      
-      return await sendEmail(email, 'orderShipped', emailData);
-    } catch (error) {
-      logger.error(`Error in sendOrderShippedEmail: ${error}`);
-      return false;
-    }
-  },
 
   sendOrderCompletedEmail: async (email: string, order: any): Promise<boolean> => {
     try {
