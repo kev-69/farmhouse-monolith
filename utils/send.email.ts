@@ -460,22 +460,55 @@ export const emailService = {
 
   // send shop rejected email
   sendShopRejectionEmail: async (email: string, shopId: string, shopName: string, ownerName: string): Promise<boolean> => {
-    try {
-      const dashboardLink = `${process.env.FRONTEND_URL}/seller/dashboard`;
-      
+    try {      
       return await sendEmail(email, 'shopRejected', { 
         shopName, 
         ownerName, 
         email,
-        dashboardLink
+        supportLink: `${process.env.FRONTEND_URL}/contact-us`
       });
     } catch (error) {
       logger.error(`Error in sendShopRejectionEmail: ${error}`);
       return false;
     }
   },
+
   // send shop banned email
+  sendShopBannedEmail: async (email: string, shopId: string, shopName: string, ownerName: string): Promise<boolean> => {
+    try {
+      const appealLink = `${process.env.FRONTEND_URL}/contact-us`;
+      
+      return await sendEmail(email, 'shopBanned', { 
+        shopName, 
+        ownerName, 
+        email,
+        appealLink,
+        policiesLink: `${process.env.FRONTEND_URL}/seller-terms-of-service`,
+        banReason: 'Violation of our terms of service'
+      });
+    } catch (error) {
+      logger.error(`Error in sendShopBannedEmail: ${error}`);
+      return false;
+    }
+  },
+
   // send shop unbanned email
+  sendShopUnbannedEmail: async (email: string, shopId: string, shopName: string, ownerName: string): Promise<boolean> => {
+    try {
+      const dashboardLink = `${process.env.SHOP_FRONTEND_URL}/seller/dashboard`;
+      
+      return await sendEmail(email, 'shopUnbanned', { 
+        shopName, 
+        ownerName, 
+        email,
+        dashboardLink,
+        reinstatementDate: new Date().toLocaleDateString(),
+      });
+    } catch (error) {
+      logger.error(`Error in sendShopUnbannedEmail: ${error}`);
+      return false;
+    }
+  },
   
   /**
    * Send order confirmation email
@@ -484,7 +517,7 @@ export const emailService = {
    */
   sendOrderConfirmationEmail: async (email: string, order: any): Promise<boolean> => {
     try {
-      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      const orderLink = `${process.env.FRONTEND_URL}/dashboard`;
 
       // Use shipping address from the order or fall back to user's address
       const shippingAddress = order.shippingAddress || {};
@@ -494,7 +527,7 @@ export const emailService = {
         name: `${order.user?.firstName} ${order.user?.lastName}`,
         orderNumber: order.id.substring(0, 8).toUpperCase(),
         date: order.createdAt,
-        // paymentMethod: order.paymentMethod,
+        paymentMethod: order.paymentMethod,
         items: order.orderItems.map((item: any) => ({
           name: item.product.name,
           quantity: item.quantity,
@@ -521,7 +554,7 @@ export const emailService = {
    */
   sendOrderShippedEmail: async (email: string, order: any): Promise<boolean> => {
     try {
-      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      const orderLink = `${process.env.FRONTEND_URL}/dashboard`;
       
       // Format order data for email template
       const emailData = {
@@ -546,9 +579,9 @@ export const emailService = {
     }
   },
 
-  sendOrderDeliveredEmail: async (email: string, order: any): Promise<boolean> => {
+  sendOrderCompletedEmail: async (email: string, order: any): Promise<boolean> => {
     try {
-      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      const orderLink = `${process.env.FRONTEND_URL}/dashboard`;
       
       // Format order data for email template
       const emailData = {
@@ -563,7 +596,7 @@ export const emailService = {
         orderLink
       };
       
-      return await sendEmail(email, 'orderDelivered', emailData);
+      return await sendEmail(email, 'orderCompleted', emailData);
     } catch (error) {
       logger.error(`Error in sendOrderDeliveredEmail: ${error}`);
       return false;
@@ -572,7 +605,7 @@ export const emailService = {
 
   sendOrderCancelledEmail: async (email: string, order: any, reason: string): Promise<boolean> => {
     try {
-      const orderLink = `${process.env.FRONTEND_URL}/orders/${order.id}`;
+      const orderLink = `${process.env.FRONTEND_URL}/dashboard`;
       
       // Format order data for email template
       const emailData = {
