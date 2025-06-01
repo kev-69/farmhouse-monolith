@@ -1,5 +1,6 @@
 import { prisma } from '../../shared/prisma';
 import { FulfillmentStatus } from '@prisma/client';
+import emailService from '../../utils/send.email';
 
 export const orderService = {
   // Get all orders for a specific user (customer view)
@@ -183,7 +184,13 @@ export const orderService = {
       });
       
       const allCompleted = allOrderItems.every(
-        item => item.fulfillmentStatus === 'DELIVERED' || item.fulfillmentStatus === 'CANCELLED'
+        item => item.fulfillmentStatus === 'DELIVERED' || item.fulfillmentStatus === 'CANCELLED',
+
+        // send order completed notification to user
+        await emailService.sendOrderCompletedEmail(
+          updated.order.user.email,
+          updated.order
+        )
       );
       
       // If all items are completed, update the order status to COMPLETED
