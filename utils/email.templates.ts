@@ -312,61 +312,6 @@ export const templates: EmailTemplates = {
       </div>
     `
   }),
-  
-  orderShipped: (data) => ({
-    subject: `Your Order Has Shipped - FarmGhana Order #${data.orderNumber}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
-        <div style="text-align: center; padding: 10px;">
-          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
-        </div>
-        <div style="padding: 20px;">
-          <h2 style="color: #1e8e3e; margin-bottom: 20px;">Your Order Has Shipped!</h2>
-          <p>Hello ${data.name},</p>
-          <p>Good news! Your order has been shipped and is on its way to you.</p>
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${data.orderNumber}</p>
-            <p style="margin: 5px 0;"><strong>Shipped Date:</strong> ${new Date(data.shippedDate).toLocaleDateString()}</p>
-            ${data.trackingNumber ? 
-              `<p style="margin: 5px 0;"><strong>Tracking Number:</strong> ${data.trackingNumber}</p>
-              <p style="margin: 5px 0;"><strong>Carrier:</strong> ${data.carrier}</p>` : ''}
-          </div>
-          
-          ${data.trackingNumber ? 
-            `<div style="text-align: center; margin: 30px 0;">
-              <a href="${data.trackingLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Track Your Package</a>
-            </div>` : ''}
-          
-          <h3 style="color: #1e8e3e;">Order Summary</h3>
-          <div style="margin-bottom: 20px;">
-            ${data.items.map((item: any) => `
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eaeaea; padding: 10px 0;">
-                <div>${item.name} × ${item.quantity}</div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <h3 style="color: #1e8e3e;">Delivery Information</h3>
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-            <p style="margin: 5px 0;"><strong>${data.shipping.fullName}</strong></p>
-            <p style="margin: 5px 0;">${data.shipping.street}</p>
-            <p style="margin: 5px 0;">${data.shipping.city}, ${data.shipping.state}</p>
-            <p style="margin: 5px 0;">${data.shipping.zipCode}, ${data.shipping.country}</p>
-          </div>
-          
-          <p>If you have any questions about your delivery, please contact our customer support.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.orderLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Order Details</a>
-          </div>
-          <p>Thank you for shopping with FarmGhana!</p>
-          <p>Best regards,<br>The FarmGhana Team</p>
-        </div>
-        <div style="text-align: center; padding: 15px; background-color: #f5f5f5; color: #666; font-size: 12px; border-top: 1px solid #eaeaea;">
-          <p>&copy; ${new Date().getFullYear()} FarmGhana. All rights reserved.</p>
-        </div>
-      </div>
-    `
-  }),
 
   orderCompleted: (data) => ({
     subject: `Your Order Has Been Delivered - FarmGhana Order #${data.orderNumber}`,
@@ -405,49 +350,6 @@ export const templates: EmailTemplates = {
           <div style="text-align: center; margin: 30px 0;">
             <a href="${data.orderLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Order Details</a>
           </div>
-        </div>
-      </div>
-    `
-  }),
-
-  orderCancelled: (data) => ({
-    subject: `Order Cancelled - FarmGhana Order #${data.orderNumber}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
-        <div style="text-align: center; padding: 10px;">
-          <img src="https://farmghana.com/logo.png" alt="FarmGhana Logo" style="max-width: 150px;">
-        </div>
-        <div style="padding: 20px;">
-          <h2 style="color: #d32f2f; margin-bottom: 20px;">Your Order Has Been Cancelled</h2>
-          <p>Hello ${data.name},</p>
-          <p>We regret to inform you that your order has been cancelled.</p>
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${data.orderNumber}</p>
-            <p style="margin: 5px 0;"><strong>Cancellation Date:</strong> ${new Date(data.cancelledDate).toLocaleDateString()}</p>
-          </div>
-          
-          <h3 style="color: #1e8e3e;">Order Summary</h3>
-          <div style="margin-bottom: 20px;">
-            ${data.items.map((item: any) => `
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eaeaea; padding: 10px 0;">
-                <div>${item.name} × ${item.quantity}</div>
-              </div>
-            `).join('')}
-          </div>
-
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Cancellation Reason:</strong> ${data.reason}</p>
-          </div>
-          
-          <p>If you have any questions about the cancellation or need assistance, please contact our customer support team.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.supportLink}" style="background-color: #1e8e3e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Contact Support</a>
-          </div>
-          <p>Thank you for your understanding.</p>
-          <p>Best regards,<br>The FarmGhana Team</p>
-        </div>
-        <div style="text-align: center; padding: 15px; background-color: #f5f5f5; color: #666; font-size: 12px; border-top: 1px solid #eaeaea;">
-          <p>&copy; ${new Date().getFullYear()} FarmGhana. All rights reserved.</p>
         </div>
       </div>
     `
