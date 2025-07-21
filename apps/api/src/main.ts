@@ -11,7 +11,7 @@ import { swaggerOptions } from '../../../utils/helpers';
 import { initScheduledJobs } from '../../../utils/scheduler';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const requiredEnvVars = ['JWT_SECRET', 'DB_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
 for (const envVar of requiredEnvVars) {
