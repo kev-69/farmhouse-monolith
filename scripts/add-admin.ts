@@ -23,7 +23,7 @@ async function createAdminUser() {
     });
 
     if (existingAdmin) {
-      // console.log('Admin user already exists!');
+      console.log('Admin user already exists!');
       return;
     }
 
@@ -39,12 +39,12 @@ async function createAdminUser() {
       }
     });
 
-    // console.log('Admin user created successfully:', {
-    //   id: newAdmin.id,
-    //   email: newAdmin.email,
-    // });
+    console.log('Admin user created successfully:', {
+      id: newAdmin.id,
+      email: newAdmin.email,
+    });
   } catch (error) {
-    // console.error('Error creating admin user:', error);
+    console.error('Error creating admin user:', error);
   } finally {
     // Disconnect Prisma client
     await prisma.$disconnect();
